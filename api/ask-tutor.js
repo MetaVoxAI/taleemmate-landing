@@ -29,7 +29,7 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: data.error.message });
     }
 
-    return res.status(200).json({ result: data.choices[0].message.content });
+    return res.status(200).json({ answer: data.choices?.[0]?.message?.content || "No response." });
   } catch (error) {
     console.error("Server Error:", error);
     return res.status(500).json({ error: "Something went wrong." });
