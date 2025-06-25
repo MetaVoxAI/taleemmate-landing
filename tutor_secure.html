@@ -1,101 +1,72 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TaleemMate AI Tutor</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 2rem; background: #f4f6fa; color: #333; }
-    h1 { text-align: center; color: #2a7de1; }
-    label { display: block; margin-top: 1rem; font-weight: bold; }
-    select, input, textarea, button {
-      width: 100%; max-width: 500px;
-      margin-top: 0.5rem;
-      padding: 0.5rem;
-      font-size: 1rem;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-    button { background: #2a7de1; color: white; border: none; margin-top: 1rem; cursor: pointer; }
-    .output { margin-top: 2rem; background: #fff; padding: 1rem; border-radius: 8px; border: 1px solid #ddd; white-space: pre-wrap; }
-  </style>
+  <title>AI Tutor – TaleemMate</title>
 </head>
-<body>
-  <h1>TaleemMate AI Tutor</h1>
+<body style="font-family: Arial; padding: 20px; max-width: 600px; margin: auto;">
 
-  <label for="grade">Select Grade:</label>
-  <select id="grade">
-    <option>KG1</option>
-    <option>KG2</option>
-    <option>Grade 1</option>
-    <option>Grade 2</option>
-    <option>Grade 3</option>
-    <option>Grade 4</option>
-    <option>Grade 5</option>
-    <option>Grade 6</option>
-    <option>Grade 7</option>
-    <option>Grade 8</option>
-    <option>Grade 9</option>
-    <option>Grade 10</option>
-    <option>Grade 11</option>
-    <option>Grade 12</option>
-  </select>
+  <h1>Ask Your AI Tutor</h1>
+  <form id="tutor-form">
+    <label>
+      Grade:
+      <input name="grade" placeholder="e.g., Grade 5" required />
+    </label><br><br>
 
-  <label for="subject">Select Subject:</label>
-  <select id="subject">
-    <option>English</option>
-    <option>Arabic</option>
-    <option>Math</option>
-    <option>Science</option>
-    <option>Islamic Studies</option>
-    <option>Social Studies</option>
-  </select>
+    <label>
+      Subject:
+      <input name="subject" placeholder="e.g., Math" required />
+    </label><br><br>
 
-  <label for="level">Choose Level:</label>
-  <select id="level">
-    <option>Easy</option>
-    <option>Medium</option>
-    <option>Hard</option>
-  </select>
+    <label>
+      Level:
+      <input name="level" placeholder="e.g., Easy / Medium / Hard" required />
+    </label><br><br>
 
-  <label for="question">Ask a question or request a quiz:</label>
-  <textarea id="question" rows="4" placeholder="e.g., Explain the water cycle or Give me 5 math questions"></textarea>
+    <label>
+      Question:
+      <textarea name="question" rows="4" placeholder="Enter your question here..." required></textarea>
+    </label><br><br>
 
-  <button onclick="submitQuery()">Get Help</button>
+    <button type="submit">Ask AI Tutor</button>
+  </form>
 
-  <div class="output" id="output"></div>
+  <div id="response" style="margin-top: 20px; background: #f3f3f3; padding: 10px;"></div>
 
- <script>
-  const form = document.getElementById("tutor-form");
-  const responseDiv = document.getElementById("response");
+  <script>
+    const form = document.getElementById("tutor-form");
+    const responseDiv = document.getElementById("response");
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    responseDiv.textContent = "Thinking...";
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      responseDiv.textContent = "Thinking...";
 
-    const formData = new FormData(form);
-    const body = {
-      grade: formData.get("grade"),
-      subject: formData.get("subject"),
-      level: formData.get("level"),
-      question: formData.get("question"),
-    };
+      const formData = new FormData(form);
+      const body = {
+        grade: formData.get("grade"),
+        subject: formData.get("subject"),
+        level: formData.get("level"),
+        question: formData.get("question"),
+      };
 
-    try {
-      const res = await fetch("/api/ask-tutor", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
+      try {
+        const res = await fetch("/api/ask-tutor", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        });
 
-      const data = await res.json();
-      responseDiv.textContent = data.answer || "No answer found.";
-    } catch (error) {
-      responseDiv.textContent = "Something went wrong.";
-      console.error(error);
-    }
-  });
-</script>
+        const data = await res.json();
+        responseDiv.textContent = data.answer || "No answer found.";
+      } catch (error) {
+        responseDiv.textContent = "Something went wrong.";
+        console.error(error);
+      }
+    });
+  </script>
+
+</body>
+</html>
