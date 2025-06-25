@@ -2,12 +2,8 @@ export default async function handler(req, res) {
   try {
     const { grade, subject, level, question } = req.body;
 
-    if (!process.env.OPENAI_API_KEY) {
-      console.error("Missing OPENAI_API_KEY");
-      return res.status(500).json({ error: "API key not found" });
-    }
-
-    const prompt = `Act as an AI tutor. Grade: ${grade}. Subject: ${subject}. Level: ${level}. Question: ${question}`;
+    const prompt = `You are an AI tutor. Grade: ${grade}. Subject: ${subject}. Difficulty: ${level}.
+    Help the student with the following question in a simple way:\n\n${question}`;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -16,7 +12,7 @@ export default async function handler(req, res) {
         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "gpt-4o",
+        model: "gpt-4o", // or "gpt-3.5-turbo"
         messages: [{ role: "user", content: prompt }],
         max_tokens: 600,
       }),
@@ -24,14 +20,10 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    if (data.error) {
-      console.error("OpenAI API Error:", data.error);
-      return res.status(500).json({ error: data.error.message });
-    }
-
-    return res.status(200).json({ answer: data.choices?.[0]?.message?.content || "No response." });
+    const answer = data.choices?.[0]?.message?.content || "No answer found.";
+    return res.status(200).json({ answer });
   } catch (error) {
-    console.error("Server Error:", error);
+    console.error("AI Error:", error);
     return res.status(500).json({ error: "Something went wrong." });
   }
 }
