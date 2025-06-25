@@ -3,247 +3,212 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Tutor Demo</title>
+  <title>Welcome to TaleemMate</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
   <style>
-    /* Basic styling for layout and elements */
-    body { font-family: Arial, sans-serif; background: #f9f9f9; }
-    .container { max-width: 600px; margin: 40px auto; background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
-    h1 { text-align: center; font-size: 1.5em; margin-bottom: 0.5em; }
-    label { font-weight: bold; margin-right: 5px; }
-    select, textarea, button { font-family: inherit; }
-    .form-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
-    .form-row .form-group { flex: 1; min-width: 120px; }
-    select { width: 100%; padding: 4px 6px; }
-    /* Style the question textarea */
-    #questionInput { width: 100%; padding: 8px; resize: vertical; min-height: 60px; border: 1px solid #ccc; border-radius: 4px; }
-    /* Sample question buttons */
-    .examples { margin: 5px 0 15px; }
-    .examples button { font-size: 0.9em; margin: 3px 5px 3px 0; padding: 3px 6px; background: #eee; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; }
-    .examples button:hover { background: #e0e0e0; }
-    /* Ask button style */
-    #askButton { background: #4caf50; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 1em; }
-    #askButton:disabled { opacity: 0.6; cursor: not-allowed; }
-    /* Answer output area */
-    #answerOutput { margin-top: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 4px; background: #fcfcfc; display: none; }
-    #answerOutput h3 { margin: 0 0 10px; font-size: 1.1em; }
-    #answerOutput h3 button { font-size: 0.8em; margin-left: 10px; }
-    #answerText { white-space: pre-wrap; }  /* preserve newlines in answer text */
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to right, #e9f5ff, #fdfdfd);
+      color: #333;
+    }
+    header {
+      background-color: #007bff;
+      padding: 20px;
+      color: white;
+      text-align: center;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      background: #f0f0f0;
+      padding: 10px;
+    }
+    nav a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #007bff;
+      font-weight: bold;
+    }
+    .hero {
+      text-align: center;
+      padding: 50px 20px;
+    }
+    .hero h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+    .hero p {
+      font-size: 1.2em;
+      color: #555;
+    }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 40px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+    .card h3 {
+      color: #007bff;
+    }
+    .stats {
+      text-align: center;
+      padding: 30px;
+      background: #f9f9f9;
+    }
+    .stats h2 {
+      margin-bottom: 20px;
+    }
+    .auth-section {
+      text-align: center;
+      padding: 40px 20px;
+      background: #ffffff;
+    }
+    .auth-section h2 {
+      margin-bottom: 20px;
+      color: #007bff;
+    }
+    .auth-form {
+      max-width: 400px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .auth-form input[type="email"],
+    .auth-form input[type="password"] {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    .auth-form button {
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    footer {
+      background: #007bff;
+      color: white;
+      text-align: center;
+      padding: 15px;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>AI Tutor</h1>
-    <!-- Form for selecting grade, subject, level, and asking a question -->
-    <form id="questionForm">
-      <div class="form-row">
-        <div class="form-group">
-          <label for="gradeSelect">Grade:</label>
-          <select id="gradeSelect">
-            <!-- Support grades 1 through 12 -->
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5" selected>5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-            <option value="9">9</option>
-            <option value="10">10</option>
-            <option value="11">11</option>
-            <option value="12">12</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="subjectSelect">Subject:</label>
-          <select id="subjectSelect">
-            <!-- Support multiple subjects -->
-            <option value="Math">Mathematics</option>
-            <option value="Science" selected>Science</option>
-            <option value="History">History</option>
-            <option value="Literature">Literature</option>
-            <option value="Computer Science">Computer Science</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="levelSelect">Level:</label>
-          <select id="levelSelect">
-            <!-- Difficulty or detail level -->
-            <option value="Easy" selected>Easy</option>
-            <option value="Medium">Medium</option>
-            <option value="Hard">Hard</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="questionInput">Question:</label>
-        <textarea id="questionInput" rows="3" placeholder="Type your question here..."></textarea>
-      </div>
-      <!-- Sample question buttons populate the textarea -->
-      <div class="examples">
-        <span style="font-style: italic; color: #555;">Example questions:</span>
-        <button type="button" class="sample-btn">What is 2+2?</button>
-        <button type="button" class="sample-btn">What is the chemical formula of water?</button>
-        <button type="button" class="sample-btn">Who was the first president of the United States?</button>
-        <button type="button" class="sample-btn">ما هي عاصمة فرنسا؟</button>
-      </div>
-      <button type="submit" id="askButton">Ask Tutor</button>
-    </form>
-    <!-- Answer display area (initially hidden until a question is asked) -->
-    <div id="answerOutput">
-      <h3>Answer: <button type="button" id="voiceBtn">🔊 Listen</button></h3>
-      <div id="answerText"></div>
+  <header>
+    <h1>TaleemMate - زميل التعليم</h1>
+    <p>Helping parents support their children from KG to Grade 12</p>
+  </header>
+  <nav>
+    <a href="#tutor">AI Tutor</a>
+    <a href="#features">Features</a>
+    <a href="#stats">Stats</a>
+    <a href="#login">Login</a>
+    <a href="#admin">Admin</a>
+  </nav>
+
+  <div class="hero">
+    <h1>Your Bilingual AI Learning Assistant</h1>
+    <p>Ask questions, get answers, and track your child's learning in Arabic and English.</p>
+  </div>
+
+  <div class="features" id="features">
+    <div class="card">
+      <h3>🎓 AI Tutor</h3>
+      <p>Instant help with homework, explanations, and learning concepts.</p>
+    </div>
+    <div class="card">
+      <h3>📊 Progress Dashboard</h3>
+      <p>Parents can monitor subjects, questions, and progress easily.</p>
+    </div>
+    <div class="card">
+      <h3>🧠 Voice + Text Support</h3>
+      <p>Use voice or text input, and get voice output in two languages.</p>
+    </div>
+    <div class="card">
+      <h3>🗂️ Grade & Subject Levels</h3>
+      <p>Support for KG to Grade 12 across 10+ subjects.</p>
     </div>
   </div>
 
-  <script>
-    // Select elements from the DOM
-    const form = document.getElementById('questionForm');
-    const gradeSelect = document.getElementById('gradeSelect');
-    const subjectSelect = document.getElementById('subjectSelect');
-    const levelSelect = document.getElementById('levelSelect');
-    const questionInput = document.getElementById('questionInput');
-    const askButton = document.getElementById('askButton');
-    const answerOutput = document.getElementById('answerOutput');
-    const answerText = document.getElementById('answerText');
-    const voiceBtn = document.getElementById('voiceBtn');
-    const sampleButtons = document.querySelectorAll('.sample-btn');
+  <div class="stats" id="stats">
+    <h2>Current Stats</h2>
+    <p>👩‍🏫 3,245 Questions Answered</p>
+    <p>🧒 320+ Students Using the Tutor</p>
+    <p>📚 12 Subjects Supported</p>
+  </div>
 
-    // Function to detect if text contains Arabic characters (to choose TTS language)
-    function detectLanguage(text) {
-      const arabicPattern = /[\u0600-\u06FF]/;
-      return arabicPattern.test(text) ? 'ar' : 'en';
+  <div class="auth-section" id="login">
+    <h2>Login / Sign Up</h2>
+    <form class="auth-form" onsubmit="handleLogin(event)">
+      <input type="email" id="email" placeholder="Email Address" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+      <button type="button" onclick="handleSignUp()">Sign Up</button>
+    </form>
+  </div>
+
+  <div class="auth-section" id="admin">
+    <h2>Admin Panel (Coming Soon)</h2>
+    <p>Here you’ll see submitted questions, stats, and manage content.</p>
+  </div>
+
+  <footer>
+    &copy; 2025 TaleemMate | All rights reserved.
+  </footer>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC-VYpA0Fiul3P70QO1TGG-OTY_nDlcUvc",
+      authDomain: "taleemmate.firebaseapp.com",
+      projectId: "taleemmate",
+      storageBucket: "taleemmate.firebasestorage.app",
+      messagingSenderId: "543743794805",
+      appId: "1:543743794805:web:5b05edae6656775302223c",
+      measurementId: "G-SSN7H48753"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    function handleLogin(event) {
+      event.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      auth.signInWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          alert("Login successful");
+        })
+        .catch(error => {
+          alert("Login failed: " + error.message);
+        });
     }
 
-    // Add click event for sample question buttons to populate the question input
-    sampleButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        questionInput.value = btn.textContent;
-        questionInput.focus();
-      });
-    });
-
-    // Handle form submission (ask question)
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const grade = gradeSelect.value;
-      const subject = subjectSelect.value;
-      const level = levelSelect.value;
-      const question = questionInput.value.trim();
-      if (!question) {
-        alert("Please enter a question.");  // basic validation for empty question
-        return;
-      }
-      // Show loading state in the answer area
-      answerOutput.style.display = 'block';
-      answerText.innerHTML = "<em>Thinking…</em>";
-      voiceBtn.style.display = 'none';  // hide voice button until answer is ready
-      askButton.disabled = true;       // prevent multiple submissions
-      questionInput.disabled = true;
-      gradeSelect.disabled = true;
-      subjectSelect.disabled = true;
-      levelSelect.disabled = true;
-
-      try {
-        // Send the question to the backend API endpoint along with selected options
-        const response = await fetch('/api/ask-tutor', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ grade, subject, level, question })
+    function handleSignUp() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          alert("Signup successful");
+        })
+        .catch(error => {
+          alert("Signup failed: " + error.message);
         });
-        if (!response.ok) {
-          throw new Error(`Server responded with status ${response.status}`);
-        }
-        const data = await response.json();
-        let answer = data.answer ? data.answer.trim() : "";
-        if (!answer) {
-          // Fallback message if the answer is empty
-          answerText.textContent = "Sorry, I couldn't find an answer. Please try rephrasing your question.";
-          voiceBtn.style.display = 'none';
-        } else {
-          // Display the answer text
-          answerText.textContent = answer;
-          voiceBtn.style.display = 'inline-block';  // show the voice button for playback
-        }
-      } catch (err) {
-        // Handle errors (network issues, server errors, etc.)
-        console.error("Error fetching answer:", err);
-        answerText.textContent = "Error: Unable to retrieve answer. Please try again later.";
-        voiceBtn.style.display = 'none';
-      } finally {
-        // Re-enable the form for another question
-        askButton.disabled = false;
-        questionInput.disabled = false;
-        gradeSelect.disabled = false;
-        subjectSelect.disabled = false;
-        levelSelect.disabled = false;
-      }
-    });
-
-    // Handle the voice output button click (text-to-speech)
-    voiceBtn.addEventListener('click', () => {
-      const text = answerText.textContent;
-      if (!text) return;
-      const lang = detectLanguage(text);
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = (lang === 'ar') ? 'ar-SA' : 'en-US';  // set language for TTS (Arabic or English):contentReference[oaicite:0]{index=0}:contentReference[oaicite:1]{index=1}
-      // If a voice for the desired language is available, use it; otherwise default voice will be used
-      /* Optionally, choose a specific voice:
-      const voices = window.speechSynthesis.getVoices();
-      const voice = voices.find(v => v.lang.startsWith(lang));
-      if (voice) utterance.voice = voice;
-      */
-      // Cancel any ongoing speech and speak the utterance
-      if (window.speechSynthesis.speaking) {
-        window.speechSynthesis.cancel();
-      }
-      window.speechSynthesis.speak(utterance);  // speak the answer aloud:contentReference[oaicite:2]{index=2}
-    });
+    }
   </script>
-
-  <!-- 
-    Sample backend API handler (Node.js/Express or similar). This is not executed in the browser.
-    It demonstrates how the server might call OpenAI (or another AI service) securely using an API key from environment variables:contentReference[oaicite:3]{index=3}.
-  -->
-  <!--
-    const express = require('express');
-    const app = express();
-    app.use(express.json());
-    app.post('/api/ask-tutor', async (req, res) => {
-      try {
-        const { grade, subject, level, question } = req.body;
-        // Prepare prompt for AI model with context: include grade, subject, level
-        const isArabic = /[\\u0600-\\u06FF]/.test(question);
-        const language = isArabic ? "Arabic" : "English";
-        const systemMessage = 
-          `You are a helpful AI tutor. The student is in Grade ${grade}, asking a ${subject} question at ${level} level. `
-          + `Provide a clear, step-by-step explanation in ${language}. If the question is vague or incomplete, `
-          + `try to interpret it or ask a clarifying question instead of refusing.`;
-        // Call OpenAI API (e.g., Chat Completion) with the system message and user question
-        const openaiApiKey = process.env.OPENAI_API_KEY;  // API key from environment variable (never hard-code it):contentReference[oaicite:4]{index=4}
-        const fetchResponse = await fetch("https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${openaiApiKey}`
-          },
-          body: JSON.stringify({
-            model: "gpt-3.5-turbo",
-            messages: [
-              { role: "system", content: systemMessage },
-              { role: "user", content: question }
-            ]
-          })
-        });
-        const result = await fetchResponse.json();
-        const answer = result.choices && result.choices[0] ? result.choices[0].message.content : "";
-        res.json({ answer });  // Send the answer text back to the client
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Failed to fetch answer from AI" });
-      }
-    });
-  -->
 </body>
 </html>
