@@ -66,24 +66,36 @@
 
   <div class="output" id="output"></div>
 
-  <script>
-    async function submitQuery() {
-      const grade = document.getElementById('grade').value;
-      const subject = document.getElementById('subject').value;
-      const level = document.getElementById('level').value;
-      const question = document.getElementById('question').value;
+ <script>
+  const form = document.getElementById("tutor-form");
+  const responseDiv = document.getElementById("response");
 
-      document.getElementById('output').innerText = 'Loading...';
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    responseDiv.textContent = "Thinking...";
 
-      const response = await fetch('/api/ask-tutor', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ grade, subject, level, question })
+    const formData = new FormData(form);
+    const body = {
+      grade: formData.get("grade"),
+      subject: formData.get("subject"),
+      level: formData.get("level"),
+      question: formData.get("question"),
+    };
+
+    try {
+      const res = await fetch("/api/ask-tutor", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
       });
 
-      const data = await response.json();
-      document.getElementById('output').innerText = data;
+      const data = await res.json();
+      responseDiv.textContent = data.answer || "No answer found.";
+    } catch (error) {
+      responseDiv.textContent = "Something went wrong.";
+      console.error(error);
     }
-  </script>
-</body>
-</html>
+  });
+</script>
