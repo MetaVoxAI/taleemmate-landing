@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TaleemMate AI Tutor</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2rem; background: #f4f6fa; color: #333; }
+    h1 { text-align: center; color: #2a7de1; }
+    label { display: block; margin-top: 1rem; font-weight: bold; }
+    select, input, textarea, button {
+      width: 100%; max-width: 500px;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button { background: #2a7de1; color: white; border: none; margin-top: 1rem; cursor: pointer; }
+    .output { margin-top: 2rem; background: #fff; padding: 1rem; border-radius: 8px; border: 1px solid #ddd; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>TaleemMate AI Tutor</h1>
+
+  <label for="grade">Select Grade:</label>
+  <select id="grade">
+    <option>KG1</option>
+    <option>KG2</option>
+    <option>Grade 1</option>
+    <option>Grade 2</option>
+    <option>Grade 3</option>
+    <option>Grade 4</option>
+    <option>Grade 5</option>
+    <option>Grade 6</option>
+    <option>Grade 7</option>
+    <option>Grade 8</option>
+    <option>Grade 9</option>
+    <option>Grade 10</option>
+    <option>Grade 11</option>
+    <option>Grade 12</option>
+  </select>
+
+  <label for="subject">Select Subject:</label>
+  <select id="subject">
+    <option>English</option>
+    <option>Arabic</option>
+    <option>Math</option>
+    <option>Science</option>
+    <option>Islamic Studies</option>
+    <option>Social Studies</option>
+  </select>
+
+  <label for="level">Choose Level:</label>
+  <select id="level">
+    <option>Easy</option>
+    <option>Medium</option>
+    <option>Hard</option>
+  </select>
+
+  <label for="question">Ask a question or request a quiz:</label>
+  <textarea id="question" rows="4" placeholder="e.g., Explain the water cycle or Give me 5 math questions"></textarea>
+
+  <button onclick="submitQuery()">Get Help</button>
+
+  <div class="output" id="output"></div>
+
+  <script>
+    async function submitQuery() {
+      const grade = document.getElementById('grade').value;
+      const subject = document.getElementById('subject').value;
+      const level = document.getElementById('level').value;
+      const question = document.getElementById('question').value;
+
+      document.getElementById('output').innerText = 'Loading...';
+
+      const response = await fetch('/api/ask-tutor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ grade, subject, level, question })
+      });
+
+      const data = await response.json();
+      document.getElementById('output').innerText = data;
+    }
+  </script>
+</body>
+</html>
