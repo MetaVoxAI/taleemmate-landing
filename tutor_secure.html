@@ -3,180 +3,247 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ask Your AI Tutor</title>
+  <title>AI Tutor Demo</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background-color: #f5f5f5;
-    }
-    .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-    }
-    h1 {
-      color: #2c3e50;
-    }
-    form {
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 600px;
-      margin-bottom: 30px;
-    }
-    label {
-      display: block;
-      margin-top: 10px;
-    }
-    input,
-    select,
-    textarea {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-    button {
-      margin-top: 15px;
-      padding: 10px 15px;
-      background: #007bff;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    #response {
-      background: #f0f0f0;
-      padding: 15px;
-      border-radius: 6px;
-      max-width: 600px;
-      margin-top: 20px;
-    }
-    .examples {
-      margin-top: 20px;
-      max-width: 600px;
-    }
-    .examples h3 {
-      margin-bottom: 10px;
-    }
-    .examples button {
-      background: #e7f3ff;
-      border: 1px solid #007bff;
-      color: #007bff;
-      margin: 5px 5px 0 0;
-    }
+    /* Basic styling for layout and elements */
+    body { font-family: Arial, sans-serif; background: #f9f9f9; }
+    .container { max-width: 600px; margin: 40px auto; background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+    h1 { text-align: center; font-size: 1.5em; margin-bottom: 0.5em; }
+    label { font-weight: bold; margin-right: 5px; }
+    select, textarea, button { font-family: inherit; }
+    .form-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
+    .form-row .form-group { flex: 1; min-width: 120px; }
+    select { width: 100%; padding: 4px 6px; }
+    /* Style the question textarea */
+    #questionInput { width: 100%; padding: 8px; resize: vertical; min-height: 60px; border: 1px solid #ccc; border-radius: 4px; }
+    /* Sample question buttons */
+    .examples { margin: 5px 0 15px; }
+    .examples button { font-size: 0.9em; margin: 3px 5px 3px 0; padding: 3px 6px; background: #eee; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; }
+    .examples button:hover { background: #e0e0e0; }
+    /* Ask button style */
+    #askButton { background: #4caf50; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 1em; }
+    #askButton:disabled { opacity: 0.6; cursor: not-allowed; }
+    /* Answer output area */
+    #answerOutput { margin-top: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 4px; background: #fcfcfc; display: none; }
+    #answerOutput h3 { margin: 0 0 10px; font-size: 1.1em; }
+    #answerOutput h3 button { font-size: 0.8em; margin-left: 10px; }
+    #answerText { white-space: pre-wrap; }  /* preserve newlines in answer text */
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Ask Your AI Tutor</h1>
-    <form id="tutor-form">
-      <label>Grade:</label>
-      <select name="grade" required>
-        <option value="">Select Grade</option>
-        <option>Grade 1</option>
-        <option>Grade 2</option>
-        <option>Grade 3</option>
-        <option>Grade 4</option>
-        <option>Grade 5</option>
-        <option>Grade 6</option>
-        <option>Grade 7</option>
-        <option>Grade 8</option>
-        <option>Grade 9</option>
-        <option>Grade 10</option>
-        <option>Grade 11</option>
-        <option>Grade 12</option>
-      </select>
-
-      <label>Subject:</label>
-      <select name="subject" required>
-        <option value="">Select Subject</option>
-        <option>Math</option>
-        <option>Science</option>
-        <option>English</option>
-        <option>Arabic</option>
-        <option>History</option>
-        <option>Geography</option>
-        <option>Computer</option>
-      </select>
-
-      <label>Level:</label>
-      <select name="level" required>
-        <option value="">Select Difficulty</option>
-        <option>Easy</option>
-        <option>Medium</option>
-        <option>Hard</option>
-      </select>
-
-      <label>Question:</label>
-      <textarea name="question" rows="4" placeholder="Enter your question here..." required></textarea>
-
-      <button type="submit">Ask AI Tutor</button>
-    </form>
-
-    <div class="examples">
-      <h3>Example Questions:</h3>
-      <div>
-        <button type="button">What is the area of a triangle with base 5 cm and height 10 cm?</button>
-        <button type="button">How does photosynthesis work?</button>
-        <button type="button">What is a metaphor with an example?</button>
-        <button type="button">ما الفرق بين الفعل الماضي والمضارع؟</button>
-        <button type="button">ضع كلمة "المدرسة" في جملة مفيدة.</button>
-        <button type="button">Who was the first president of the United States?</button>
-        <button type="button">What are the continents of the world?</button>
-        <button type="button">What is a variable in programming?</button>
+    <h1>AI Tutor</h1>
+    <!-- Form for selecting grade, subject, level, and asking a question -->
+    <form id="questionForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="gradeSelect">Grade:</label>
+          <select id="gradeSelect">
+            <!-- Support grades 1 through 12 -->
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5" selected>5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="subjectSelect">Subject:</label>
+          <select id="subjectSelect">
+            <!-- Support multiple subjects -->
+            <option value="Math">Mathematics</option>
+            <option value="Science" selected>Science</option>
+            <option value="History">History</option>
+            <option value="Literature">Literature</option>
+            <option value="Computer Science">Computer Science</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="levelSelect">Level:</label>
+          <select id="levelSelect">
+            <!-- Difficulty or detail level -->
+            <option value="Easy" selected>Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+          </select>
+        </div>
       </div>
+      <div class="form-group">
+        <label for="questionInput">Question:</label>
+        <textarea id="questionInput" rows="3" placeholder="Type your question here..."></textarea>
+      </div>
+      <!-- Sample question buttons populate the textarea -->
+      <div class="examples">
+        <span style="font-style: italic; color: #555;">Example questions:</span>
+        <button type="button" class="sample-btn">What is 2+2?</button>
+        <button type="button" class="sample-btn">What is the chemical formula of water?</button>
+        <button type="button" class="sample-btn">Who was the first president of the United States?</button>
+        <button type="button" class="sample-btn">ما هي عاصمة فرنسا؟</button>
+      </div>
+      <button type="submit" id="askButton">Ask Tutor</button>
+    </form>
+    <!-- Answer display area (initially hidden until a question is asked) -->
+    <div id="answerOutput">
+      <h3>Answer: <button type="button" id="voiceBtn">🔊 Listen</button></h3>
+      <div id="answerText"></div>
     </div>
-
-    <div id="response"></div>
   </div>
 
   <script>
-    const form = document.getElementById("tutor-form");
-    const responseDiv = document.getElementById("response");
-    const exampleButtons = document.querySelectorAll(".examples button");
+    // Select elements from the DOM
+    const form = document.getElementById('questionForm');
+    const gradeSelect = document.getElementById('gradeSelect');
+    const subjectSelect = document.getElementById('subjectSelect');
+    const levelSelect = document.getElementById('levelSelect');
+    const questionInput = document.getElementById('questionInput');
+    const askButton = document.getElementById('askButton');
+    const answerOutput = document.getElementById('answerOutput');
+    const answerText = document.getElementById('answerText');
+    const voiceBtn = document.getElementById('voiceBtn');
+    const sampleButtons = document.querySelectorAll('.sample-btn');
 
-    exampleButtons.forEach(button => {
-      button.addEventListener("click", () => {
-        document.querySelector("textarea[name='question']").value = button.textContent;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Function to detect if text contains Arabic characters (to choose TTS language)
+    function detectLanguage(text) {
+      const arabicPattern = /[\u0600-\u06FF]/;
+      return arabicPattern.test(text) ? 'ar' : 'en';
+    }
+
+    // Add click event for sample question buttons to populate the question input
+    sampleButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        questionInput.value = btn.textContent;
+        questionInput.focus();
       });
     });
 
-    form.addEventListener("submit", async (e) => {
+    // Handle form submission (ask question)
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      responseDiv.textContent = "Thinking...";
-
-      const formData = new FormData(form);
-      const body = {
-        grade: formData.get("grade"),
-        subject: formData.get("subject"),
-        level: formData.get("level"),
-        question: formData.get("question"),
-      };
+      const grade = gradeSelect.value;
+      const subject = subjectSelect.value;
+      const level = levelSelect.value;
+      const question = questionInput.value.trim();
+      if (!question) {
+        alert("Please enter a question.");  // basic validation for empty question
+        return;
+      }
+      // Show loading state in the answer area
+      answerOutput.style.display = 'block';
+      answerText.innerHTML = "<em>Thinking…</em>";
+      voiceBtn.style.display = 'none';  // hide voice button until answer is ready
+      askButton.disabled = true;       // prevent multiple submissions
+      questionInput.disabled = true;
+      gradeSelect.disabled = true;
+      subjectSelect.disabled = true;
+      levelSelect.disabled = true;
 
       try {
-        const res = await fetch("/api/ask-tutor", {
+        // Send the question to the backend API endpoint along with selected options
+        const response = await fetch('/api/ask-tutor', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ grade, subject, level, question })
+        });
+        if (!response.ok) {
+          throw new Error(`Server responded with status ${response.status}`);
+        }
+        const data = await response.json();
+        let answer = data.answer ? data.answer.trim() : "";
+        if (!answer) {
+          // Fallback message if the answer is empty
+          answerText.textContent = "Sorry, I couldn't find an answer. Please try rephrasing your question.";
+          voiceBtn.style.display = 'none';
+        } else {
+          // Display the answer text
+          answerText.textContent = answer;
+          voiceBtn.style.display = 'inline-block';  // show the voice button for playback
+        }
+      } catch (err) {
+        // Handle errors (network issues, server errors, etc.)
+        console.error("Error fetching answer:", err);
+        answerText.textContent = "Error: Unable to retrieve answer. Please try again later.";
+        voiceBtn.style.display = 'none';
+      } finally {
+        // Re-enable the form for another question
+        askButton.disabled = false;
+        questionInput.disabled = false;
+        gradeSelect.disabled = false;
+        subjectSelect.disabled = false;
+        levelSelect.disabled = false;
+      }
+    });
+
+    // Handle the voice output button click (text-to-speech)
+    voiceBtn.addEventListener('click', () => {
+      const text = answerText.textContent;
+      if (!text) return;
+      const lang = detectLanguage(text);
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = (lang === 'ar') ? 'ar-SA' : 'en-US';  // set language for TTS (Arabic or English):contentReference[oaicite:0]{index=0}:contentReference[oaicite:1]{index=1}
+      // If a voice for the desired language is available, use it; otherwise default voice will be used
+      /* Optionally, choose a specific voice:
+      const voices = window.speechSynthesis.getVoices();
+      const voice = voices.find(v => v.lang.startsWith(lang));
+      if (voice) utterance.voice = voice;
+      */
+      // Cancel any ongoing speech and speak the utterance
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+      }
+      window.speechSynthesis.speak(utterance);  // speak the answer aloud:contentReference[oaicite:2]{index=2}
+    });
+  </script>
+
+  <!-- 
+    Sample backend API handler (Node.js/Express or similar). This is not executed in the browser.
+    It demonstrates how the server might call OpenAI (or another AI service) securely using an API key from environment variables:contentReference[oaicite:3]{index=3}.
+  -->
+  <!--
+    const express = require('express');
+    const app = express();
+    app.use(express.json());
+    app.post('/api/ask-tutor', async (req, res) => {
+      try {
+        const { grade, subject, level, question } = req.body;
+        // Prepare prompt for AI model with context: include grade, subject, level
+        const isArabic = /[\\u0600-\\u06FF]/.test(question);
+        const language = isArabic ? "Arabic" : "English";
+        const systemMessage = 
+          `You are a helpful AI tutor. The student is in Grade ${grade}, asking a ${subject} question at ${level} level. `
+          + `Provide a clear, step-by-step explanation in ${language}. If the question is vague or incomplete, `
+          + `try to interpret it or ask a clarifying question instead of refusing.`;
+        // Call OpenAI API (e.g., Chat Completion) with the system message and user question
+        const openaiApiKey = process.env.OPENAI_API_KEY;  // API key from environment variable (never hard-code it):contentReference[oaicite:4]{index=4}
+        const fetchResponse = await fetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${openaiApiKey}`
           },
-          body: JSON.stringify(body),
+          body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            messages: [
+              { role: "system", content: systemMessage },
+              { role: "user", content: question }
+            ]
+          })
         });
-
-        const data = await res.json();
-        responseDiv.textContent = data.answer || "No answer found.";
-        responseDiv.scrollIntoView({ behavior: "smooth" });
+        const result = await fetchResponse.json();
+        const answer = result.choices && result.choices[0] ? result.choices[0].message.content : "";
+        res.json({ answer });  // Send the answer text back to the client
       } catch (error) {
-        responseDiv.textContent = "Something went wrong.";
         console.error(error);
+        res.status(500).json({ error: "Failed to fetch answer from AI" });
       }
     });
-  </script>
+  -->
 </body>
 </html>
