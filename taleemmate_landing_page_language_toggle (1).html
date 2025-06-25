@@ -1,0 +1,101 @@
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TaleemMate – Bilingual Learning Support for Parents</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6fa;
+      color: #333;
+      transition: direction 0.3s ease;
+    }
+    header {
+      background: #2a7de1;
+      padding: 2rem;
+      color: white;
+      text-align: center;
+    }
+    section {
+      padding: 2rem;
+      max-width: 700px;
+      margin: auto;
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: #eef3fb;
+    }
+    .lang-toggle {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+    .lang-toggle button {
+      margin-left: 5px;
+      padding: 0.3rem 0.6rem;
+      background: white;
+      border: 1px solid #ccc;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="lang-toggle">
+    <button onclick="setLang('en')">English</button>
+    <button onclick="setLang('ar')">العربية</button>
+  </div>
+
+  <header>
+    <h1 id="title">TaleemMate</h1>
+    <p id="subtitle">Empowering Parents with Smart, Bilingual Learning Support (KG–Grade 12)</p>
+  </header>
+
+  <section>
+    <h2 id="whatIs">What is TaleemMate?</h2>
+    <p id="description">TaleemMate is a bilingual (English & Arabic) web and mobile platform that helps parents support their children’s learning from KG to Grade 12. AI tutoring, homework help, and smart quizzes in one tool.</p>
+
+    <h2 id="signup">Join Early Access</h2>
+    <form action="https://formspree.io/f/xblypdvq" method="POST">
+      <input type="email" name="email" placeholder="Enter your email" required style="padding: 0.5rem; width: 70%; max-width: 300px;" />
+      <button type="submit" style="padding: 0.5rem 1rem; margin-left: 10px; background-color: #2a7de1; color: white; border: none;">Join</button>
+    </form>
+  </section>
+
+  <footer>
+    &copy; 2025 TaleemMate. All rights reserved.
+  </footer>
+
+  <script>
+    const langData = {
+      en: {
+        title: "TaleemMate",
+        subtitle: "Empowering Parents with Smart, Bilingual Learning Support (KG–Grade 12)",
+        whatIs: "What is TaleemMate?",
+        description: "TaleemMate is a bilingual (English & Arabic) web and mobile platform that helps parents support their children’s learning from KG to Grade 12. AI tutoring, homework help, and smart quizzes in one tool.",
+        signup: "Join Early Access"
+      },
+      ar: {
+        title: "تعلّم ميت",
+        subtitle: "منصة تعليمية ذكية ثنائية اللغة لدعم أولياء الأمور في تعليم أطفالهم (من الروضة حتى الصف 12)",
+        whatIs: "ما هو تعلّم ميت؟",
+        description: "تعلّم ميت هو منصة ويب وتطبيق ثنائي اللغة (العربية والإنجليزية) يساعد أولياء الأمور على دعم تعلم أطفالهم من الروضة حتى الصف 12، من خلال دروس ذكية، ومساعد واجبات، واختبارات يومية.",
+        signup: "اشترك للحصول على وصول مبكر"
+      }
+    };
+
+    function setLang(lang) {
+      document.documentElement.lang = lang;
+      document.body.dir = lang === 'ar' ? 'rtl' : 'ltr';
+      document.getElementById("title").textContent = langData[lang].title;
+      document.getElementById("subtitle").textContent = langData[lang].subtitle;
+      document.getElementById("whatIs").textContent = langData[lang].whatIs;
+      document.getElementById("description").textContent = langData[lang].description;
+      document.getElementById("signup").textContent = langData[lang].signup;
+    }
+  </script>
+</body>
+</html>
