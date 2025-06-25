@@ -6,6 +6,7 @@
   <title>Welcome to TaleemMate</title>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -100,6 +101,14 @@
       cursor: pointer;
       font-size: 1rem;
     }
+    .dashboard {
+      text-align: center;
+      padding: 40px;
+      display: none;
+    }
+    .dashboard h2 {
+      color: #007bff;
+    }
     footer {
       background: #007bff;
       color: white;
@@ -119,6 +128,8 @@
     <a href="#stats">Stats</a>
     <a href="#login">Login</a>
     <a href="#admin">Admin</a>
+    <a href="#dashboard" id="dashboard-link" style="display:none;">Dashboard</a>
+    <a href="#" id="logout-link" style="display:none;" onclick="handleLogout()">Logout</a>
   </nav>
 
   <div class="hero">
@@ -162,6 +173,11 @@
     </form>
   </div>
 
+  <div class="dashboard" id="dashboard">
+    <h2>Welcome to Your Dashboard</h2>
+    <p>Here you will see your saved questions, progress, and more.</p>
+  </div>
+
   <div class="auth-section" id="admin">
     <h2>Admin Panel (Coming Soon)</h2>
     <p>Here you’ll see submitted questions, stats, and manage content.</p>
@@ -184,6 +200,22 @@
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    auth.onAuthStateChanged(user => {
+      const dashboardLink = document.getElementById("dashboard-link");
+      const logoutLink = document.getElementById("logout-link");
+      const dashboard = document.getElementById("dashboard");
+      if (user) {
+        dashboardLink.style.display = "inline";
+        logoutLink.style.display = "inline";
+        dashboard.style.display = "block";
+      } else {
+        dashboardLink.style.display = "none";
+        logoutLink.style.display = "none";
+        dashboard.style.display = "none";
+      }
+    });
 
     function handleLogin(event) {
       event.preventDefault();
@@ -203,11 +235,22 @@
       const password = document.getElementById("password").value;
       auth.createUserWithEmailAndPassword(email, password)
         .then(userCredential => {
+          const user = userCredential.user;
+          db.collection("users").doc(user.uid).set({
+            email: user.email,
+            createdAt: new Date()
+          });
           alert("Signup successful");
         })
         .catch(error => {
           alert("Signup failed: " + error.message);
         });
+    }
+
+    function handleLogout() {
+      auth.signOut().then(() => {
+        alert("Logged out successfully");
+      });
     }
   </script>
 </body>
