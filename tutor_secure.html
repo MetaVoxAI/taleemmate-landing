@@ -185,11 +185,17 @@
       document.querySelector("header h1").innerText = isArabic ? "زميل التعليم - TaleemMate" : "TaleemMate - AI Tutor";
       document.querySelector("header p").innerText = isArabic ? "مساعد ذكي لتعليم الأطفال من الروضة حتى الصف 12" : "Smart assistant for students KG to Grade 12";
       document.querySelector("#question-input").placeholder = isArabic ? "اكتب سؤالك هنا..." : "Type your question here...";
+      document.querySelector("button[onclick='submitQuestion()']").innerText = isArabic ? "إرسال" : "Submit";
       document.querySelector("#login-section h3").innerText = isArabic ? "تسجيل الدخول / إنشاء حساب" : "Login / Create Account";
       document.querySelector("#email").placeholder = isArabic ? "البريد الإلكتروني" : "Email";
       document.querySelector("#password").placeholder = isArabic ? "كلمة المرور" : "Password";
       document.querySelector("#language option[value='ar']").innerText = "العربية";
       document.querySelector("#language option[value='en']").innerText = "English";
+      document.querySelector("#subject").options[0].text = isArabic ? "رياضيات" : "Math";
+      document.querySelector("#subject").options[1].text = isArabic ? "علوم" : "Science";
+      document.querySelector("#subject").options[2].text = isArabic ? "لغة عربية" : "Arabic";
+      document.querySelector("#subject").options[3].text = isArabic ? "لغة إنجليزية" : "English";
+      document.querySelector("#grade").options[0].text = isArabic ? "اختر الصف" : "Select Grade";
     }
 
     window.onload = () => {
