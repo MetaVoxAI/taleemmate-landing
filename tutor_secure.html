@@ -63,6 +63,8 @@
       text-align: center;
     }
   </style>
+
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
@@ -228,20 +230,15 @@
       loadUserQuestions(user.uid);
       if (adminEmails.includes(user.email)) loadAdminQuestions();
 
-      const openAiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+      const aiResponse = await fetch("https://us-central1-taleemmate.cloudfunctions.net/api", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer YOUR_OPENAI_API_KEY"
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-          model: "gpt-3.5-turbo",
-          messages: [{ role: "user", content: question }],
-          temperature: 0.7
-        })
+        body: JSON.stringify({ question })
       });
-      const json = await openAiResponse.json();
-      document.getElementById("ai-answer").innerText = json.choices?.[0]?.message?.content || "لم يتم الحصول على إجابة من الذكاء الاصطناعي.";
+      const json = await aiResponse.json();
+      document.getElementById("ai-answer").innerText = json.answer || "لم يتم الحصول على إجابة من الذكاء الاصطناعي.";
     }
 
     function loadUserQuestions(uid) {
