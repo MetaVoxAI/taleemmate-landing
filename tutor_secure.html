@@ -4,38 +4,82 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>زميل التعليم</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f0f8ff;
+      margin: 0;
+      padding: 0;
+    }
+    nav {
+      padding: 10px;
+      background: #007bff;
+      text-align: right;
+      color: white;
+    }
+    nav button {
+      margin-left: 5px;
+    }
+    .section {
+      text-align: center;
+      padding: 40px;
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px;
+    }
+    #question-form {
+      display: none;
+      text-align: center;
+      margin-top: 30px;
+    }
+    table {
+      width: 90%;
+      margin: auto;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 8px;
+    }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 </head>
-<body style="font-family: 'Arial', sans-serif; background-color: #f0f8ff;">
-  <nav style="padding: 10px; background: #007bff; text-align: right; color: white;">
-    <span id="user-email" style="float: left; font-weight: bold;"></span>
-    <button id="login-button" onclick="showLoginForm()">تسجيل الدخول / إنشاء حساب</button>
-    <button id="logout-link" style="display:none;" onclick="logout()">تسجيل الخروج</button>
-    <button id="dashboard-link" style="display:none;" onclick="showDashboard()">لوحة التحكم</button>
+<body>
+  <nav>
+    <span id="user-email" style="float:left; font-weight:bold;"></span>
+    <button onclick="showLogin()">تسجيل الدخول / إنشاء حساب</button>
+    <button id="logout-btn" onclick="logout()" style="display:none;">تسجيل الخروج</button>
+    <button id="dashboard-btn" onclick="showDashboard()" style="display:none;">لوحة التحكم</button>
   </nav>
 
-  <div id="login-modal" style="display:none; text-align:center; margin-top: 50px;">
-    <h3>تسجيل الدخول أو إنشاء حساب</h3>
-    <input type="email" id="login-email" placeholder="البريد الإلكتروني" /><br /><br />
-    <input type="password" id="login-password" placeholder="كلمة المرور" /><br /><br />
+  <div id="login-section" class="section">
+    <h3>تسجيل الدخول / إنشاء حساب</h3>
+    <input type="email" id="email" placeholder="البريد الإلكتروني" /><br />
+    <input type="password" id="password" placeholder="كلمة المرور" /><br />
     <button onclick="login()">دخول</button>
     <button onclick="signup()">إنشاء حساب</button>
   </div>
 
-  <div class="dashboard" id="dashboard" style="display: none; text-align: center; padding: 40px;">
+  <div id="dashboard" class="section" style="display:none;">
     <h2>مرحباً بك في لوحة التحكم</h2>
     <p>تابع أسئلتك المحفوظة وتقدمك هنا.</p>
-    <div id="user-questions"><p>يتم تحميل الأسئلة...</p></div>
+    <div id="question-form">
+      <h3>✍️ اسأل المعلم الذكي</h3>
+      <input type="text" id="user-question" placeholder="اكتب سؤالك هنا" style="width:60%;" />
+      <button onclick="submitQuestion()">إرسال</button>
+    </div>
+    <div id="user-questions">يتم التحميل...</div>
   </div>
 
-  <div class="auth-section" id="admin" style="display:none;">
+  <div id="admin-panel" class="section" style="display:none;">
     <h2>لوحة المشرف</h2>
-    <div id="admin-content"><p>يتم تحميل الأسئلة...</p></div>
+    <div id="admin-questions">تحميل الأسئلة...</div>
   </div>
-
-  <!-- Firebase CDN (Compat version) -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
   <script>
     const firebaseConfig = {
@@ -51,142 +95,99 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
-    const adminEmails = ["taleemmate@gmail.com"];
+    const adminEmails = ["ahfitems@gmail.com"];
 
-    function showLoginForm() {
-      document.getElementById("login-modal").style.display = "block";
+    function showLogin() {
+      document.getElementById("login-section").style.display = "block";
     }
 
     function login() {
-      const email = document.getElementById("login-email").value;
-      const password = document.getElementById("login-password").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
       auth.signInWithEmailAndPassword(email, password)
         .then(() => {
-          alert("تم تسجيل الدخول!");
-          document.getElementById("login-modal").style.display = "none";
+          document.getElementById("login-section").style.display = "none";
         })
-        .catch(err => alert(err.message));
+        .catch(e => alert(e.message));
     }
 
     function signup() {
-      const email = document.getElementById("login-email").value;
-      const password = document.getElementById("login-password").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
       auth.createUserWithEmailAndPassword(email, password)
-        .then(userCredential => {
-          db.collection("users").doc(userCredential.user.uid).set({
-            email: userCredential.user.email,
-            createdAt: new Date()
-          });
+        .then(() => {
           alert("تم إنشاء الحساب!");
-          document.getElementById("login-modal").style.display = "none";
+          document.getElementById("login-section").style.display = "none";
         })
-        .catch(err => alert(err.message));
+        .catch(e => alert(e.message));
     }
 
     function logout() {
-      auth.signOut().then(() => alert("تم تسجيل الخروج."));
+      auth.signOut().then(() => location.reload());
     }
 
     function showDashboard() {
       document.getElementById("dashboard").scrollIntoView({ behavior: "smooth" });
     }
 
-    function renderAdminPanel() {
-      const adminContent = document.getElementById("admin-content");
-      adminContent.innerHTML = "<p>تحميل...</p>";
-      db.collection("questions").orderBy("timestamp", "desc").get()
+    function submitQuestion() {
+      const q = document.getElementById("user-question").value.trim();
+      if (q === "") return alert("اكتب سؤالك أولاً");
+      const user = auth.currentUser;
+      db.collection("questions").add({
+        email: user.email,
+        uid: user.uid,
+        question: q,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        alert("تم إرسال السؤال!");
+        document.getElementById("user-question").value = "";
+        loadUserQuestions(user);
+      });
+    }
+
+    function loadUserQuestions(user) {
+      db.collection("questions")
+        .where("uid", "==", user.uid)
+        .orderBy("timestamp", "desc")
+        .get()
         .then(snapshot => {
-          if (snapshot.empty) {
-            adminContent.innerHTML = "<p>لا توجد أسئلة.</p>";
-            return;
-          }
-          const table = document.createElement("table");
-          table.style.width = "100%";
-          table.border = "1";
-          const header = document.createElement("tr");
-          header.innerHTML = "<th>البريد</th><th>السؤال</th><th>التاريخ</th><th>الإجراء</th>";
-          table.appendChild(header);
-          snapshot.forEach(docSnap => {
-            const data = docSnap.data();
-            const row = document.createElement("tr");
-            row.innerHTML = `
-              <td>${data.email || "غير معروف"}</td>
-              <td>${data.question}</td>
-              <td>${new Date(data.timestamp?.toDate()).toLocaleString()}</td>
-              <td><button onclick="deleteQuestion('${docSnap.id}')">حذف</button></td>
-            `;
-            table.appendChild(row);
-          });
-          adminContent.innerHTML = "<h3>أحدث الأسئلة</h3>";
-          adminContent.appendChild(table);
-        })
-        .catch(error => {
-          adminContent.innerHTML = `<p>خطأ في التحميل: ${error.message}</p>`;
+          const list = snapshot.docs.map(doc => {
+            const d = doc.data();
+            return `<li>${d.question} <br><small>${new Date(d.timestamp?.toDate()).toLocaleString()}</small></li>`;
+          }).join("");
+          document.getElementById("user-questions").innerHTML = "<ul>" + list + "</ul>";
         });
     }
 
-    function deleteQuestion(id) {
-      if (confirm("هل تريد حذف هذا السؤال؟")) {
-        db.collection("questions").doc(id).delete()
-          .then(() => {
-            alert("تم الحذف.");
-            renderAdminPanel();
-          })
-          .catch(error => {
-            alert("خطأ في الحذف: " + error.message);
-          });
-      }
-    }
-
-    function renderUserDashboard(user) {
-      const userQuestions = document.getElementById("user-questions");
-      userQuestions.innerHTML = "<p>جارٍ تحميل أسئلتك...</p>";
-      db.collection("questions").where("uid", "==", user.uid).orderBy("timestamp", "desc").get()
+    function loadAdminQuestions() {
+      db.collection("questions")
+        .orderBy("timestamp", "desc")
+        .get()
         .then(snapshot => {
-          if (snapshot.empty) {
-            userQuestions.innerHTML = "<p>لم تقم بإرسال أي سؤال.</p>";
-            return;
-          }
-          const list = document.createElement("ul");
-          snapshot.forEach(docSnap => {
-            const data = docSnap.data();
-            const item = document.createElement("li");
-            item.innerHTML = `<em>${data.question}</em> <br><small>${new Date(data.timestamp?.toDate()).toLocaleString()}</small>`;
-            list.appendChild(item);
-          });
-          userQuestions.innerHTML = "<h3>أسئلتك</h3>";
-          userQuestions.appendChild(list);
-        })
-        .catch(error => {
-          userQuestions.innerHTML = `<p>حدث خطأ: ${error.message}</p>`;
+          const rows = snapshot.docs.map(doc => {
+            const d = doc.data();
+            return `<tr><td>${d.email}</td><td>${d.question}</td><td>${new Date(d.timestamp?.toDate()).toLocaleString()}</td></tr>`;
+          }).join("");
+          document.getElementById("admin-questions").innerHTML = `
+            <table><tr><th>البريد</th><th>السؤال</th><th>التاريخ</th></tr>${rows}</table>`;
         });
     }
 
     auth.onAuthStateChanged(user => {
-      const dashboardLink = document.getElementById("dashboard-link");
-      const logoutLink = document.getElementById("logout-link");
-      const userEmail = document.getElementById("user-email");
-      const dashboard = document.getElementById("dashboard");
-      const adminSection = document.getElementById("admin");
-
+      const isAdmin = user && adminEmails.includes(user.email);
       if (user) {
-        dashboardLink.style.display = "inline";
-        logoutLink.style.display = "inline";
-        userEmail.textContent = user.email;
-        dashboard.style.display = "block";
-        renderUserDashboard(user);
-        if (adminEmails.includes(user.email)) {
-          adminSection.style.display = "block";
-          renderAdminPanel();
-        } else {
-          adminSection.style.display = "none";
+        document.getElementById("user-email").textContent = user.email;
+        document.getElementById("logout-btn").style.display = "inline";
+        document.getElementById("dashboard-btn").style.display = "inline";
+        document.getElementById("login-section").style.display = "none";
+        document.getElementById("dashboard").style.display = "block";
+        document.getElementById("question-form").style.display = "block";
+        loadUserQuestions(user);
+        if (isAdmin) {
+          document.getElementById("admin-panel").style.display = "block";
+          loadAdminQuestions();
         }
-      } else {
-        dashboardLink.style.display = "none";
-        logoutLink.style.display = "none";
-        userEmail.textContent = "";
-        dashboard.style.display = "none";
-        adminSection.style.display = "none";
       }
     });
   </script>
