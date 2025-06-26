@@ -11,37 +11,50 @@
       margin: 0;
       padding: 0;
       direction: rtl;
+      transition: background 0.3s ease;
     }
     header {
-      background: #007bff;
+      background: linear-gradient(to right, #007bff, #0056b3);
       color: white;
-      padding: 15px;
+      padding: 20px;
       text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
     nav {
-      padding: 10px;
+      padding: 15px;
       text-align: center;
       background: #e9ecef;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
     nav button {
-      margin: 0 5px;
-      padding: 5px 10px;
+      margin: 5px;
+      padding: 8px 15px;
       font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    nav button:hover {
+      background-color: #0056b3;
     }
     .section {
-      padding: 20px;
+      padding: 30px;
       text-align: center;
     }
     select, input[type=text], input[type=email], input[type=password] {
       margin: 10px;
-      padding: 8px;
-      border-radius: 5px;
+      padding: 10px;
+      border-radius: 8px;
       border: 1px solid #ccc;
       width: 250px;
+      transition: box-shadow 0.3s ease;
     }
-    #grade {
-      max-height: 100px;
-      overflow-y: auto;
+    select:focus, input:focus {
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.6);
+      outline: none;
     }
     #question-input {
       width: 60%;
@@ -49,6 +62,11 @@
     .dashboard, .admin-panel {
       display: none;
       padding: 20px;
+      background-color: #ffffff;
+      border-radius: 10px;
+      margin: 20px auto;
+      width: 80%;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
     table {
       width: 100%;
@@ -56,16 +74,28 @@
       margin-top: 20px;
     }
     table, th, td {
-      border: 1px solid #aaa;
+      border: 1px solid #ddd;
     }
     th, td {
-      padding: 10px;
+      padding: 12px;
       text-align: center;
     }
+    #ai-answer {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 1.2em;
+      color: #333;
+    }
+    #video-answer {
+      display: none;
+      margin-top: 20px;
+    }
+    video {
+      max-width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
   </style>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <header>
@@ -74,134 +104,60 @@
   </header>
 
   <nav>
-    <span id="user-email"></span>
-    <button onclick="toggleLanguage()">🌐 اللغة / Language</button>
     <button onclick="showLogin()">تسجيل الدخول / إنشاء حساب</button>
     <button onclick="logout()" id="logout-btn" style="display:none">تسجيل الخروج</button>
     <button onclick="showDashboard()" id="dashboard-btn" style="display:none">لوحة التحكم</button>
     <button onclick="showAdminPanel()" id="admin-btn" style="display:none">لوحة المشرف</button>
+    <button onclick="toggleLanguage()">🌐 اللغة / Language</button>
+    <span id="user-email"></span>
   </nav>
 
-  <div class="section" id="login-section" style="display:none">
-    <h3>تسجيل الدخول / إنشاء حساب</h3>
-    <input type="email" id="email" placeholder="البريد الإلكتروني" />
-    <input type="password" id="password" placeholder="كلمة المرور" />
-    <br />
-    <button onclick="login()">دخول</button>
-    <button onclick="signup()">إنشاء حساب</button>
-  </div>
-
-  <div class="section" id="ask-section" style="display:none">
+  <div class="section">
     <h2>✍️ اسأل المعلم الذكي</h2>
+    <select id="subject">
+      <option value="math">رياضيات</option>
+      <option value="science">علوم</option>
+    </select>
+    <select id="grade">
+      <option value="KG">الروضة</option>
+      <option value="1">الصف الأول</option>
+      <option value="2">الصف الثاني</option>
+      <option value="3">الصف الثالث</option>
+    </select>
     <select id="language">
       <option value="ar">العربية</option>
       <option value="en">English</option>
     </select>
-    <select id="grade">
-      <option disabled selected>اختر الصف</option>
-      <option value="KG">KG - الروضة</option>
-      <option value="1">الصف الأول - Grade 1</option>
-      <option value="2">الصف الثاني - Grade 2</option>
-      <option value="3">الصف الثالث - Grade 3</option>
-      <option value="4">الصف الرابع - Grade 4</option>
-      <option value="5">الصف الخامس - Grade 5</option>
-      <option value="6">الصف السادس - Grade 6</option>
-      <option value="7">الصف السابع - Grade 7</option>
-      <option value="8">الصف الثامن - Grade 8</option>
-      <option value="9">الصف التاسع - Grade 9</option>
-      <option value="10">الصف العاشر - Grade 10</option>
-      <option value="11">الصف الحادي عشر - Grade 11</option>
-      <option value="12">الصف الثاني عشر - Grade 12</option>
-    </select>
-    <select id="subject">
-      <option>رياضيات</option>
-      <option>علوم</option>
-      <option>لغة عربية</option>
-      <option>لغة إنجليزية</option>
-    </select>
     <br />
     <input type="text" id="question-input" placeholder="اكتب سؤالك هنا..." />
     <button onclick="submitQuestion()">إرسال</button>
-    <div id="ai-answer" style="margin-top: 15px; font-weight: bold;"></div>
-  </div>
-
-  <div class="dashboard" id="dashboard">
-    <h2>لوحة تحكم المستخدم</h2>
-    <div id="user-questions">لم يتم إرسال أي سؤال بعد.</div>
-  </div>
-
-  <div class="admin-panel" id="admin-panel">
-    <h2>لوحة المشرف</h2>
-    <table>
-      <thead>
-        <tr><th>البريد</th><th>السؤال</th><th>التاريخ</th></tr>
-      </thead>
-      <tbody id="admin-table"></tbody>
-    </table>
+    <div id="ai-answer"></div>
+    <div id="video-answer">
+      <video id="answer-video" controls></video>
+    </div>
   </div>
 
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyC-VYpA0Fiul3P70QO1TGG-OTY_nDlcUvc",
-      authDomain: "taleemmate.firebaseapp.com",
-      projectId: "taleemmate",
-      storageBucket: "taleemmate.appspot.com",
-      messagingSenderId: "543743794805",
-      appId: "1:543743794805:web:5b05edae6656775302223c",
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-    const adminEmails = ["taleemmate@gmail.com"];
-
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        document.getElementById("logout-btn").style.display = "inline";
-        document.getElementById("dashboard-btn").style.display = "inline";
-        document.getElementById("user-email").innerText = user.email;
-        document.getElementById("ask-section").style.display = "block";
-
-        if (adminEmails.includes(user.email)) {
-          document.getElementById("admin-btn").style.display = "inline";
-          loadAdminQuestions();
-        }
-        loadUserQuestions(user.uid);
-      }
-    });
-
     function toggleLanguage() {
-      const currentLang = localStorage.getItem("lang") || "ar";
-      const newLang = currentLang === "ar" ? "en" : "ar";
-      localStorage.setItem("lang", newLang);
-      applyLanguage(newLang);
+      const html = document.documentElement;
+      if (html.lang === 'ar') {
+        html.lang = 'en';
+        html.dir = 'ltr';
+        document.querySelector('h1').innerText = 'TaleemMate - AI Tutor';
+        document.querySelector('p').innerText = 'Smart assistant for students KG to Grade 12';
+        document.querySelector('h2').innerText = '✍️ Ask the Smart Tutor';
+        document.getElementById('question-input').placeholder = 'Type your question here...';
+        document.querySelector('button[onclick="submitQuestion()"]').innerText = 'Submit';
+      } else {
+        html.lang = 'ar';
+        html.dir = 'rtl';
+        document.querySelector('h1').innerText = 'زميل التعليم - TaleemMate';
+        document.querySelector('p').innerText = 'مساعد ذكي لتعليم الأطفال من الروضة حتى الصف 12';
+        document.querySelector('h2').innerText = '✍️ اسأل المعلم الذكي';
+        document.getElementById('question-input').placeholder = 'اكتب سؤالك هنا...';
+        document.querySelector('button[onclick="submitQuestion()"]').innerText = 'إرسال';
+      }
     }
-
-    function applyLanguage(lang) {
-      const isArabic = lang === "ar";
-      document.documentElement.lang = lang;
-      document.documentElement.dir = isArabic ? "rtl" : "ltr";
-
-      document.title = isArabic ? "زميل التعليم - TaleemMate" : "TaleemMate - AI Tutor";
-      document.querySelector("header h1").innerText = isArabic ? "زميل التعليم - TaleemMate" : "TaleemMate - AI Tutor";
-      document.querySelector("header p").innerText = isArabic ? "مساعد ذكي لتعليم الأطفال من الروضة حتى الصف 12" : "Smart assistant for students KG to Grade 12";
-      document.querySelector("#question-input").placeholder = isArabic ? "اكتب سؤالك هنا..." : "Type your question here...";
-      document.querySelector("button[onclick='submitQuestion()']").innerText = isArabic ? "إرسال" : "Submit";
-      document.querySelector("#login-section h3").innerText = isArabic ? "تسجيل الدخول / إنشاء حساب" : "Login / Create Account";
-      document.querySelector("#email").placeholder = isArabic ? "البريد الإلكتروني" : "Email";
-      document.querySelector("#password").placeholder = isArabic ? "كلمة المرور" : "Password";
-      document.querySelector("#language option[value='ar']").innerText = "العربية";
-      document.querySelector("#language option[value='en']").innerText = "English";
-      document.querySelector("#subject").options[0].text = isArabic ? "رياضيات" : "Math";
-      document.querySelector("#subject").options[1].text = isArabic ? "علوم" : "Science";
-      document.querySelector("#subject").options[2].text = isArabic ? "لغة عربية" : "Arabic";
-      document.querySelector("#subject").options[3].text = isArabic ? "لغة إنجليزية" : "English";
-      document.querySelector("#grade").options[0].text = isArabic ? "اختر الصف" : "Select Grade";
-    }
-
-    window.onload = () => {
-      const savedLang = localStorage.getItem("lang") || "ar";
-      applyLanguage(savedLang);
-    };
   </script>
 </body>
 </html>
