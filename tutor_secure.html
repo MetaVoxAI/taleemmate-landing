@@ -39,6 +39,10 @@
       border: 1px solid #ccc;
       width: 250px;
     }
+    #grade {
+      max-height: 100px;
+      overflow-y: auto;
+    }
     #question-input {
       width: 60%;
     }
@@ -59,6 +63,9 @@
       text-align: center;
     }
   </style>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <header>
