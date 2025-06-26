@@ -59,7 +59,7 @@
     #question-input {
       width: 60%;
     }
-    .dashboard, .admin-panel {
+    .dashboard, .admin-panel, #login-section {
       display: none;
       padding: 20px;
       background-color: #ffffff;
@@ -104,13 +104,20 @@
   </header>
 
   <nav>
-    <button onclick="showLogin()">تسجيل الدخول / إنشاء حساب</button>
+    <button onclick="showLogin()" id="login-btn">تسجيل الدخول / إنشاء حساب</button>
     <button onclick="logout()" id="logout-btn" style="display:none">تسجيل الخروج</button>
     <button onclick="showDashboard()" id="dashboard-btn" style="display:none">لوحة التحكم</button>
     <button onclick="showAdminPanel()" id="admin-btn" style="display:none">لوحة المشرف</button>
     <button onclick="toggleLanguage()">🌐 اللغة / Language</button>
     <span id="user-email"></span>
   </nav>
+
+  <div id="login-section">
+    <input type="email" id="email" placeholder="البريد الإلكتروني / Email" />
+    <input type="password" id="password" placeholder="كلمة المرور / Password" />
+    <button onclick="login()">Login</button>
+    <button onclick="signup()">Sign Up</button>
+  </div>
 
   <div class="section">
     <h2>✍️ اسأل المعلم الذكي</h2>
@@ -154,12 +161,37 @@
       document.querySelector('h2').innerText = lang === 'ar' ? '✍️ اسأل المعلم الذكي' : '✍️ Ask the Smart Tutor';
       document.getElementById('question-input').placeholder = lang === 'ar' ? 'اكتب سؤالك هنا...' : 'Type your question here...';
       document.querySelector('button[onclick="submitQuestion()"]')?.innerText = lang === 'ar' ? 'إرسال' : 'Submit';
+      document.getElementById('login-btn').innerText = lang === 'ar' ? 'تسجيل الدخول / إنشاء حساب' : 'Login / Create Account';
     }
 
     window.onload = () => {
       const savedLang = localStorage.getItem('lang') || 'ar';
       applyLanguage(savedLang);
     };
+
+    function showLogin() {
+      document.getElementById('login-section').style.display = 'block';
+    }
+
+    function login() {
+      alert('Login functionality placeholder');
+    }
+
+    function signup() {
+      alert('Signup functionality placeholder');
+    }
+
+    function logout() {
+      alert('Logout functionality placeholder');
+    }
+
+    function showDashboard() {
+      alert('Dashboard placeholder');
+    }
+
+    function showAdminPanel() {
+      alert('Admin panel placeholder');
+    }
 
     async function submitQuestion() {
       const question = document.getElementById('question-input').value.trim();
