@@ -140,23 +140,44 @@
   <script>
     function toggleLanguage() {
       const html = document.documentElement;
-      if (html.lang === 'ar') {
-        html.lang = 'en';
-        html.dir = 'ltr';
-        document.querySelector('h1').innerText = 'TaleemMate - AI Tutor';
-        document.querySelector('p').innerText = 'Smart assistant for students KG to Grade 12';
-        document.querySelector('h2').innerText = '✍️ Ask the Smart Tutor';
-        document.getElementById('question-input').placeholder = 'Type your question here...';
-        document.querySelector('button[onclick="submitQuestion()"]').innerText = 'Submit';
-      } else {
-        html.lang = 'ar';
-        html.dir = 'rtl';
-        document.querySelector('h1').innerText = 'زميل التعليم - TaleemMate';
-        document.querySelector('p').innerText = 'مساعد ذكي لتعليم الأطفال من الروضة حتى الصف 12';
-        document.querySelector('h2').innerText = '✍️ اسأل المعلم الذكي';
-        document.getElementById('question-input').placeholder = 'اكتب سؤالك هنا...';
-        document.querySelector('button[onclick="submitQuestion()"]').innerText = 'إرسال';
-      }
+      const newLang = html.lang === 'ar' ? 'en' : 'ar';
+      localStorage.setItem('lang', newLang);
+      applyLanguage(newLang);
+    }
+
+    function applyLanguage(lang) {
+      const html = document.documentElement;
+      html.lang = lang;
+      html.dir = lang === 'ar' ? 'rtl' : 'ltr';
+      document.querySelector('h1').innerText = lang === 'ar' ? 'زميل التعليم - TaleemMate' : 'TaleemMate - AI Tutor';
+      document.querySelector('p').innerText = lang === 'ar' ? 'مساعد ذكي لتعليم الأطفال من الروضة حتى الصف 12' : 'Smart assistant for students KG to Grade 12';
+      document.querySelector('h2').innerText = lang === 'ar' ? '✍️ اسأل المعلم الذكي' : '✍️ Ask the Smart Tutor';
+      document.getElementById('question-input').placeholder = lang === 'ar' ? 'اكتب سؤالك هنا...' : 'Type your question here...';
+      document.querySelector('button[onclick="submitQuestion()"]')?.innerText = lang === 'ar' ? 'إرسال' : 'Submit';
+    }
+
+    window.onload = () => {
+      const savedLang = localStorage.getItem('lang') || 'ar';
+      applyLanguage(savedLang);
+    };
+
+    async function submitQuestion() {
+      const question = document.getElementById('question-input').value.trim();
+      const aiAnswer = document.getElementById('ai-answer');
+      const videoWrapper = document.getElementById('video-answer');
+      const videoElement = document.getElementById('answer-video');
+
+      if (!question) return alert('يرجى كتابة سؤال.');
+
+      aiAnswer.innerText = '...جاري إنشاء الإجابة';
+      videoWrapper.style.display = 'none';
+
+      const responseText = `إجابة للسؤال: ${question}`;
+      aiAnswer.innerText = responseText;
+
+      const fakeVideoUrl = 'https://www.w3schools.com/html/mov_bbb.mp4';
+      videoElement.src = fakeVideoUrl;
+      videoWrapper.style.display = 'block';
     }
   </script>
 </body>
