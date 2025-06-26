@@ -63,8 +63,6 @@
       text-align: center;
     }
   </style>
-
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
@@ -77,6 +75,7 @@
 
   <nav>
     <span id="user-email"></span>
+    <button onclick="toggleLanguage()">🌐 اللغة / Language</button>
     <button onclick="showLogin()">تسجيل الدخول / إنشاء حساب</button>
     <button onclick="logout()" id="logout-btn" style="display:none">تسجيل الخروج</button>
     <button onclick="showDashboard()" id="dashboard-btn" style="display:none">لوحة التحكم</button>
@@ -170,106 +169,33 @@
       }
     });
 
-    function showLogin() {
-      document.getElementById("login-section").style.display = "block";
+    function toggleLanguage() {
+      const currentLang = localStorage.getItem("lang") || "ar";
+      const newLang = currentLang === "ar" ? "en" : "ar";
+      localStorage.setItem("lang", newLang);
+      applyLanguage(newLang);
     }
 
-    function login() {
-      const email = document.getElementById("email").value;
-      const pass = document.getElementById("password").value;
-      auth.signInWithEmailAndPassword(email, pass).then(() => {
-        alert("تم تسجيل الدخول");
-        document.getElementById("login-section").style.display = "none";
-      }).catch(e => alert(e.message));
+    function applyLanguage(lang) {
+      const isArabic = lang === "ar";
+      document.documentElement.lang = lang;
+      document.documentElement.dir = isArabic ? "rtl" : "ltr";
+
+      document.title = isArabic ? "زميل التعليم - TaleemMate" : "TaleemMate - AI Tutor";
+      document.querySelector("header h1").innerText = isArabic ? "زميل التعليم - TaleemMate" : "TaleemMate - AI Tutor";
+      document.querySelector("header p").innerText = isArabic ? "مساعد ذكي لتعليم الأطفال من الروضة حتى الصف 12" : "Smart assistant for students KG to Grade 12";
+      document.querySelector("#question-input").placeholder = isArabic ? "اكتب سؤالك هنا..." : "Type your question here...";
+      document.querySelector("#login-section h3").innerText = isArabic ? "تسجيل الدخول / إنشاء حساب" : "Login / Create Account";
+      document.querySelector("#email").placeholder = isArabic ? "البريد الإلكتروني" : "Email";
+      document.querySelector("#password").placeholder = isArabic ? "كلمة المرور" : "Password";
+      document.querySelector("#language option[value='ar']").innerText = "العربية";
+      document.querySelector("#language option[value='en']").innerText = "English";
     }
 
-    function signup() {
-      const email = document.getElementById("email").value;
-      const pass = document.getElementById("password").value;
-      auth.createUserWithEmailAndPassword(email, pass).then(() => {
-        alert("تم إنشاء الحساب");
-        document.getElementById("login-section").style.display = "none";
-      }).catch(e => alert(e.message));
-    }
-
-    function logout() {
-      auth.signOut();
-      location.reload();
-    }
-
-    function showDashboard() {
-      document.getElementById("dashboard").style.display = "block";
-    }
-
-    function showAdminPanel() {
-      document.getElementById("admin-panel").style.display = "block";
-    }
-
-    async function submitQuestion() {
-      const user = auth.currentUser;
-      if (!user) return alert("سجل الدخول أولاً");
-
-      const question = document.getElementById("question-input").value;
-      const language = document.getElementById("language").value;
-      const grade = document.getElementById("grade").value;
-      const subject = document.getElementById("subject").value;
-
-      if (!question.trim()) return alert("يرجى كتابة سؤال");
-
-      await db.collection("questions").add({
-        uid: user.uid,
-        email: user.email,
-        question,
-        language,
-        grade,
-        subject,
-        timestamp: new Date()
-      });
-
-      document.getElementById("question-input").value = "";
-      loadUserQuestions(user.uid);
-      if (adminEmails.includes(user.email)) loadAdminQuestions();
-
-      const aiResponse = await fetch("https://us-central1-taleemmate.cloudfunctions.net/api", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ question })
-      });
-      const json = await aiResponse.json();
-      document.getElementById("ai-answer").innerText = json.answer || "لم يتم الحصول على إجابة من الذكاء الاصطناعي.";
-    }
-
-    function loadUserQuestions(uid) {
-      db.collection("questions").where("uid", "==", uid).orderBy("timestamp", "desc").get()
-        .then(snapshot => {
-          const container = document.getElementById("user-questions");
-          if (snapshot.empty) {
-            container.innerHTML = "<p>لم ترسل أي سؤال بعد.</p>";
-            return;
-          }
-          let html = "<ul>";
-          snapshot.forEach(doc => {
-            const q = doc.data();
-            html += `<li>${q.question} - (${q.subject} - ${q.grade})</li>`;
-          });
-          html += "</ul>";
-          container.innerHTML = html;
-        });
-    }
-
-    function loadAdminQuestions() {
-      db.collection("questions").orderBy("timestamp", "desc").get().then(snapshot => {
-        const tbody = document.getElementById("admin-table");
-        tbody.innerHTML = "";
-        snapshot.forEach(doc => {
-          const q = doc.data();
-          const row = `<tr><td>${q.email}</td><td>${q.question}</td><td>${new Date(q.timestamp.toDate()).toLocaleString()}</td></tr>`;
-          tbody.innerHTML += row;
-        });
-      });
-    }
+    window.onload = () => {
+      const savedLang = localStorage.getItem("lang") || "ar";
+      applyLanguage(savedLang);
+    };
   </script>
 </body>
 </html>
