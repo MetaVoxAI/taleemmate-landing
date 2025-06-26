@@ -121,6 +121,7 @@
     <br />
     <input type="text" id="question-input" placeholder="اكتب سؤالك هنا..." />
     <button onclick="submitQuestion()">إرسال</button>
+    <div id="ai-answer" style="margin-top: 15px; font-weight: bold;"></div>
   </div>
 
   <div class="dashboard" id="dashboard">
@@ -202,7 +203,7 @@
       document.getElementById("admin-panel").style.display = "block";
     }
 
-    function submitQuestion() {
+    async function submitQuestion() {
       const user = auth.currentUser;
       if (!user) return alert("سجل الدخول أولاً");
 
@@ -213,7 +214,7 @@
 
       if (!question.trim()) return alert("يرجى كتابة سؤال");
 
-      db.collection("questions").add({
+      await db.collection("questions").add({
         uid: user.uid,
         email: user.email,
         question,
@@ -221,12 +222,26 @@
         grade,
         subject,
         timestamp: new Date()
-      }).then(() => {
-        alert("تم إرسال السؤال بنجاح");
-        document.getElementById("question-input").value = "";
-        loadUserQuestions(user.uid);
-        if (adminEmails.includes(user.email)) loadAdminQuestions();
       });
+
+      document.getElementById("question-input").value = "";
+      loadUserQuestions(user.uid);
+      if (adminEmails.includes(user.email)) loadAdminQuestions();
+
+      const openAiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer YOUR_OPENAI_API_KEY"
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: [{ role: "user", content: question }],
+          temperature: 0.7
+        })
+      });
+      const json = await openAiResponse.json();
+      document.getElementById("ai-answer").innerText = json.choices?.[0]?.message?.content || "لم يتم الحصول على إجابة من الذكاء الاصطناعي.";
     }
 
     function loadUserQuestions(uid) {
