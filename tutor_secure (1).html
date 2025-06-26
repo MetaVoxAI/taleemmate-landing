@@ -1,89 +1,201 @@
+<nav style="padding: 10px; background: #f3f3f3; text-align: right; font-family: Arial, sans-serif;">
+  <span id="user-email" style="float: left; font-weight: bold;"></span>
+  <button id="login-button" onclick="showLoginForm()">Login / Sign Up</button>
+  <button id="logout-link" style="display:none;" onclick="logout()">Logout</button>
+  <button id="dashboard-link" style="display:none;" onclick="showDashboard()">Dashboard</button>
+</nav>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TaleemMate AI Tutor</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 2rem; background: #f4f6fa; color: #333; }
-    h1 { text-align: center; color: #2a7de1; }
-    label { display: block; margin-top: 1rem; font-weight: bold; }
-    select, input, textarea, button {
-      width: 100%; max-width: 500px;
-      margin-top: 0.5rem;
-      padding: 0.5rem;
-      font-size: 1rem;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-    button { background: #2a7de1; color: white; border: none; margin-top: 1rem; cursor: pointer; }
-    .output { margin-top: 2rem; background: #fff; padding: 1rem; border-radius: 8px; border: 1px solid #ddd; white-space: pre-wrap; }
-  </style>
-</head>
-<body>
-  <h1>TaleemMate AI Tutor</h1>
+<div id="login-modal" style="display:none; text-align:center; margin-top: 50px; font-family: Arial, sans-serif;">
+  <h3>Login or Sign Up</h3>
+  <input type="email" id="login-email" placeholder="Email" /><br /><br />
+  <input type="password" id="login-password" placeholder="Password" /><br /><br />
+  <button onclick="login()">Login</button>
+  <button onclick="signup()">Sign Up</button>
+</div>
 
-  <label for="grade">Select Grade:</label>
-  <select id="grade">
-    <option>KG1</option>
-    <option>KG2</option>
-    <option>Grade 1</option>
-    <option>Grade 2</option>
-    <option>Grade 3</option>
-    <option>Grade 4</option>
-    <option>Grade 5</option>
-    <option>Grade 6</option>
-    <option>Grade 7</option>
-    <option>Grade 8</option>
-    <option>Grade 9</option>
-    <option>Grade 10</option>
-    <option>Grade 11</option>
-    <option>Grade 12</option>
-  </select>
+<div class="dashboard" id="dashboard" style="display: none; text-align: center; padding: 40px; font-family: Arial, sans-serif;">
+  <h2>Welcome to Your Dashboard</h2>
+  <p>Track your submitted questions and progress here.</p>
+  <div id="user-questions">
+    <p>Loading your questions...</p>
+  </div>
+</div>
 
-  <label for="subject">Select Subject:</label>
-  <select id="subject">
-    <option>English</option>
-    <option>Arabic</option>
-    <option>Math</option>
-    <option>Science</option>
-    <option>Islamic Studies</option>
-    <option>Social Studies</option>
-  </select>
+<div class="auth-section" id="admin" style="display:none; font-family: Arial, sans-serif;">
+  <h2>Admin Panel</h2>
+  <div id="admin-content">
+    <p>Loading questions...</p>
+  </div>
+</div>
 
-  <label for="level">Choose Level:</label>
-  <select id="level">
-    <option>Easy</option>
-    <option>Medium</option>
-    <option>Hard</option>
-  </select>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+  import { getFirestore, collection, query, where, orderBy, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-  <label for="question">Ask a question or request a quiz:</label>
-  <textarea id="question" rows="4" placeholder="e.g., Explain the water cycle or Give me 5 math questions"></textarea>
+  const firebaseConfig = {
+    apiKey: "AIzaSyC-VYpA0Fiul3P70QO1TGG-OTY_nDlcUvc",
+    authDomain: "taleemmate.firebaseapp.com",
+    projectId: "taleemmate",
+    storageBucket: "taleemmate.firebasestorage.app",
+    messagingSenderId: "543743794805",
+    appId: "1:543743794805:web:5b05edae6656775302223c",
+    measurementId: "G-SSN7H48753"
+  };
 
-  <button onclick="submitQuery()">Get Help</button>
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-  <div class="output" id="output"></div>
+  // 🔐 Admin Email List
+  const adminEmails = ["taleemmate@gmail.com"];
 
-  <script>
-    async function submitQuery() {
-      const grade = document.getElementById('grade').value;
-      const subject = document.getElementById('subject').value;
-      const level = document.getElementById('level').value;
-      const question = document.getElementById('question').value;
+  window.auth = auth;
+  window.db = db;
 
-      document.getElementById('output').innerText = 'Loading...';
+  function showLoginForm() {
+    document.getElementById("login-modal").style.display = "block";
+  }
 
-      const response = await fetch('/api/ask-tutor', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ grade, subject, level, question })
+  function login() {
+    const email = document.getElementById("login-email").value;
+    const password = document.getElementById("login-password").value;
+    signInWithEmailAndPassword(auth, email, password)
+      .then(user => {
+        alert("Logged in!");
+        document.getElementById("login-modal").style.display = "none";
+      })
+      .catch(err => alert(err.message));
+  }
+
+  function signup() {
+    const email = document.getElementById("login-email").value;
+    const password = document.getElementById("login-password").value;
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(user => {
+        alert("Signed up successfully!");
+        document.getElementById("login-modal").style.display = "none";
+      })
+      .catch(err => alert(err.message));
+  }
+
+  function logout() {
+    signOut(auth).then(() => {
+      alert("Logged out.");
+    });
+  }
+
+  function showDashboard() {
+    document.getElementById("dashboard").scrollIntoView({ behavior: "smooth" });
+  }
+
+  function renderAdminPanel() {
+    const adminContent = document.getElementById("admin-content");
+    adminContent.innerHTML = "<p>Loading questions...</p>";
+
+    const q = query(collection(db, "questions"), orderBy("timestamp", "desc"));
+    getDocs(q)
+      .then(snapshot => {
+        if (snapshot.empty) {
+          adminContent.innerHTML = "<p>No questions found.</p>";
+          return;
+        }
+
+        const table = document.createElement("table");
+        table.style.width = "100%";
+        table.border = "1";
+        const header = document.createElement("tr");
+        header.innerHTML = "<th>Email</th><th>Question</th><th>Timestamp</th><th>Actions</th>";
+        table.appendChild(header);
+
+        snapshot.forEach(docSnap => {
+          const data = docSnap.data();
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${data.email || "Unknown"}</td>
+            <td>${data.question}</td>
+            <td>${new Date(data.timestamp?.toDate()).toLocaleString()}</td>
+            <td><button onclick="deleteQuestion('${docSnap.id}')">Delete</button></td>
+          `;
+          table.appendChild(row);
+        });
+
+        adminContent.innerHTML = "<h3>Recent Questions</h3>";
+        adminContent.appendChild(table);
+      })
+      .catch(error => {
+        adminContent.innerHTML = `<p>Error loading data: ${error.message}</p>`;
       });
+  }
 
-      const data = await response.json();
-      document.getElementById('output').innerText = data;
+  function deleteQuestion(id) {
+    if (confirm("Are you sure you want to delete this question?")) {
+      deleteDoc(doc(db, "questions", id))
+        .then(() => {
+          alert("Question deleted successfully.");
+          renderAdminPanel();
+        })
+        .catch(error => {
+          alert("Error deleting question: " + error.message);
+        });
     }
-  </script>
-</body>
-</html>
+  }
+
+  function renderUserDashboard(user) {
+    const dashboard = document.getElementById("dashboard");
+    const userQuestions = document.getElementById("user-questions");
+    userQuestions.innerHTML = "<p>Loading your questions...</p>";
+
+    const q = query(collection(db, "questions"), where("uid", "==", user.uid), orderBy("timestamp", "desc"));
+    getDocs(q)
+      .then(snapshot => {
+        if (snapshot.empty) {
+          userQuestions.innerHTML = "<p>You haven't submitted any questions yet.</p>";
+          return;
+        }
+
+        const list = document.createElement("ul");
+        snapshot.forEach(docSnap => {
+          const data = docSnap.data();
+          const item = document.createElement("li");
+          item.innerHTML = `<em>${data.question}</em> <br><small>${new Date(data.timestamp?.toDate()).toLocaleString()}</small>`;
+          list.appendChild(item);
+        });
+
+        userQuestions.innerHTML = "<h3>Your Questions</h3>";
+        userQuestions.appendChild(list);
+      })
+      .catch(error => {
+        userQuestions.innerHTML = `<p>Error loading your data: ${error.message}</p>`;
+      });
+  }
+
+  onAuthStateChanged(auth, user => {
+    const dashboardLink = document.getElementById("dashboard-link");
+    const logoutLink = document.getElementById("logout-link");
+    const userEmail = document.getElementById("user-email");
+    const dashboard = document.getElementById("dashboard");
+    const adminSection = document.getElementById("admin");
+
+    if (user) {
+      dashboardLink.style.display = "inline";
+      logoutLink.style.display = "inline";
+      userEmail.textContent = user.email;
+      dashboard.style.display = "block";
+      renderUserDashboard(user);
+
+      if (adminEmails.includes(user.email)) {
+        adminSection.style.display = "block";
+        renderAdminPanel();
+      } else {
+        adminSection.style.display = "none";
+      }
+    } else {
+      dashboardLink.style.display = "none";
+      logoutLink.style.display = "none";
+      userEmail.textContent = "";
+      dashboard.style.display = "none";
+      adminSection.style.display = "none";
+    }
+  });
+</script>
