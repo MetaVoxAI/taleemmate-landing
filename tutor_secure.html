@@ -99,12 +99,12 @@
 </head>
 <body>
   <header>
-    <h1>زميل التعليم - TaleemMate</h1>
-    <p>مساعد ذكي لتعليم الأطفال من الروضة حتى الصف 12</p>
+    <h1 id="title">زميل التعليم - TaleemMate</h1>
+    <p id="subtitle">مساعد ذكي لتعليم الأطفال من الروضة حتى الصف 12</p>
   </header>
 
   <nav>
-    <button onclick="showLogin()" id="login-btn">تسجيل الدخول / إنشاء حساب</button>
+    <button onclick="toggleLogin()" id="login-btn">تسجيل الدخول / إنشاء حساب</button>
     <button onclick="logout()" id="logout-btn" style="display:none">تسجيل الخروج</button>
     <button onclick="showDashboard()" id="dashboard-btn" style="display:none">لوحة التحكم</button>
     <button onclick="showAdminPanel()" id="admin-btn" style="display:none">لوحة المشرف</button>
@@ -120,7 +120,7 @@
   </div>
 
   <div class="section">
-    <h2>✍️ اسأل المعلم الذكي</h2>
+    <h2 id="ask-title">✍️ اسأل المعلم الذكي</h2>
     <select id="subject">
       <option value="math">رياضيات</option>
       <option value="science">علوم</option>
@@ -137,7 +137,7 @@
     </select>
     <br />
     <input type="text" id="question-input" placeholder="اكتب سؤالك هنا..." />
-    <button onclick="submitQuestion()">إرسال</button>
+    <button onclick="submitQuestion()" id="submit-btn">إرسال</button>
     <div id="ai-answer"></div>
     <div id="video-answer">
       <video id="answer-video" controls></video>
@@ -156,11 +156,11 @@
       const html = document.documentElement;
       html.lang = lang;
       html.dir = lang === 'ar' ? 'rtl' : 'ltr';
-      document.querySelector('h1').innerText = lang === 'ar' ? 'زميل التعليم - TaleemMate' : 'TaleemMate - AI Tutor';
-      document.querySelector('p').innerText = lang === 'ar' ? 'مساعد ذكي لتعليم الأطفال من الروضة حتى الصف 12' : 'Smart assistant for students KG to Grade 12';
-      document.querySelector('h2').innerText = lang === 'ar' ? '✍️ اسأل المعلم الذكي' : '✍️ Ask the Smart Tutor';
+      document.getElementById('title').innerText = lang === 'ar' ? 'زميل التعليم - TaleemMate' : 'TaleemMate - AI Tutor';
+      document.getElementById('subtitle').innerText = lang === 'ar' ? 'مساعد ذكي لتعليم الأطفال من الروضة حتى الصف 12' : 'Smart assistant for students KG to Grade 12';
+      document.getElementById('ask-title').innerText = lang === 'ar' ? '✍️ اسأل المعلم الذكي' : '✍️ Ask the Smart Tutor';
       document.getElementById('question-input').placeholder = lang === 'ar' ? 'اكتب سؤالك هنا...' : 'Type your question here...';
-      document.querySelector('button[onclick="submitQuestion()"]')?.innerText = lang === 'ar' ? 'إرسال' : 'Submit';
+      document.getElementById('submit-btn').innerText = lang === 'ar' ? 'إرسال' : 'Submit';
       document.getElementById('login-btn').innerText = lang === 'ar' ? 'تسجيل الدخول / إنشاء حساب' : 'Login / Create Account';
     }
 
@@ -169,8 +169,9 @@
       applyLanguage(savedLang);
     };
 
-    function showLogin() {
-      document.getElementById('login-section').style.display = 'block';
+    function toggleLogin() {
+      const section = document.getElementById('login-section');
+      section.style.display = section.style.display === 'block' ? 'none' : 'block';
     }
 
     function login() {
