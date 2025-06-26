@@ -172,12 +172,23 @@
       aiAnswer.innerText = '...جاري إنشاء الإجابة';
       videoWrapper.style.display = 'none';
 
-      const responseText = `إجابة للسؤال: ${question}`;
-      aiAnswer.innerText = responseText;
+      try {
+        const response = await fetch("https://us-central1-taleemmate.cloudfunctions.net/api", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question })
+        });
 
-      const fakeVideoUrl = 'https://www.w3schools.com/html/mov_bbb.mp4';
-      videoElement.src = fakeVideoUrl;
-      videoWrapper.style.display = 'block';
+        const data = await response.json();
+        aiAnswer.innerText = data.answer || 'لم يتم الحصول على إجابة.';
+
+        const fakeVideoUrl = 'https://www.w3schools.com/html/mov_bbb.mp4';
+        videoElement.src = fakeVideoUrl;
+        videoWrapper.style.display = 'block';
+      } catch (error) {
+        aiAnswer.innerText = 'حدث خطأ أثناء طلب الإجابة.';
+        console.error(error);
+      }
     }
   </script>
 </body>
