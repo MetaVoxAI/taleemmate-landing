@@ -138,4 +138,126 @@
     </table>
   </div>
 </body>
+  <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyC-VYpA0Fiul3P70QO1TGG-OTY_nDlcUvc",
+    authDomain: "taleemmate.firebaseapp.com",
+    projectId: "taleemmate",
+    storageBucket: "taleemmate.appspot.com",
+    messagingSenderId: "543743794805",
+    appId: "1:543743794805:web:5b05edae6656775302223c",
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  const adminEmails = ["taleemmate@gmail.com"];
+
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      document.getElementById("logout-btn").style.display = "inline";
+      document.getElementById("dashboard-btn").style.display = "inline";
+      document.getElementById("user-email").innerText = user.email;
+      document.getElementById("ask-section").style.display = "block";
+
+      if (adminEmails.includes(user.email)) {
+        document.getElementById("admin-btn").style.display = "inline";
+        loadAdminQuestions();
+      }
+      loadUserQuestions(user.uid);
+    }
+  });
+
+  function showLogin() {
+    document.getElementById("login-section").style.display = "block";
+  }
+
+  function login() {
+    const email = document.getElementById("email").value;
+    const pass = document.getElementById("password").value;
+    auth.signInWithEmailAndPassword(email, pass).then(() => {
+      alert("تم تسجيل الدخول");
+      document.getElementById("login-section").style.display = "none";
+    }).catch(e => alert(e.message));
+  }
+
+  function signup() {
+    const email = document.getElementById("email").value;
+    const pass = document.getElementById("password").value;
+    auth.createUserWithEmailAndPassword(email, pass).then(() => {
+      alert("تم إنشاء الحساب");
+      document.getElementById("login-section").style.display = "none";
+    }).catch(e => alert(e.message));
+  }
+
+  function logout() {
+    auth.signOut();
+    location.reload();
+  }
+
+  function showDashboard() {
+    document.getElementById("dashboard").style.display = "block";
+  }
+
+  function showAdminPanel() {
+    document.getElementById("admin-panel").style.display = "block";
+  }
+
+  function submitQuestion() {
+    const user = auth.currentUser;
+    if (!user) return alert("سجل الدخول أولاً");
+
+    const question = document.getElementById("question-input").value;
+    const language = document.getElementById("language").value;
+    const grade = document.getElementById("grade").value;
+    const subject = document.getElementById("subject").value;
+
+    if (!question.trim()) return alert("يرجى كتابة سؤال");
+
+    db.collection("questions").add({
+      uid: user.uid,
+      email: user.email,
+      question,
+      language,
+      grade,
+      subject,
+      timestamp: new Date()
+    }).then(() => {
+      alert("تم إرسال السؤال بنجاح");
+      document.getElementById("question-input").value = "";
+      loadUserQuestions(user.uid);
+      if (adminEmails.includes(user.email)) loadAdminQuestions();
+    });
+  }
+
+  function loadUserQuestions(uid) {
+    db.collection("questions").where("uid", "==", uid).orderBy("timestamp", "desc").get()
+      .then(snapshot => {
+        const container = document.getElementById("user-questions");
+        if (snapshot.empty) {
+          container.innerHTML = "<p>لم ترسل أي سؤال بعد.</p>";
+          return;
+        }
+        let html = "<ul>";
+        snapshot.forEach(doc => {
+          const q = doc.data();
+          html += `<li>${q.question} - (${q.subject} - ${q.grade})</li>`;
+        });
+        html += "</ul>";
+        container.innerHTML = html;
+      });
+  }
+
+  function loadAdminQuestions() {
+    db.collection("questions").orderBy("timestamp", "desc").get().then(snapshot => {
+      const tbody = document.getElementById("admin-table");
+      tbody.innerHTML = "";
+      snapshot.forEach(doc => {
+        const q = doc.data();
+        const row = `<tr><td>${q.email}</td><td>${q.question}</td><td>${new Date(q.timestamp.toDate()).toLocaleString()}</td></tr>`;
+        tbody.innerHTML += row;
+      });
+    });
+  }
+</script>
 </html>
