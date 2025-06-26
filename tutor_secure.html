@@ -3,99 +3,157 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>زميل التعليم</title>
+  <title>زميل التعليم - TaleemMate</title>
   <style>
     body {
       font-family: 'Arial', sans-serif;
-      background-color: #f0f8ff;
+      background: #f0f8ff;
       margin: 0;
       padding: 0;
+      direction: rtl;
+    }
+    header {
+      background: #007bff;
+      color: white;
+      padding: 15px;
+      text-align: center;
     }
     nav {
       padding: 10px;
-      background: #007bff;
-      text-align: right;
-      color: white;
+      text-align: center;
+      background: #e9ecef;
     }
     nav button {
-      margin-left: 5px;
+      margin: 0 5px;
+      padding: 5px 10px;
+      font-weight: bold;
     }
     .section {
+      padding: 20px;
       text-align: center;
-      padding: 40px;
     }
-    input, button {
-      padding: 10px;
-      margin: 5px;
+    select, input[type=text], input[type=email], input[type=password] {
+      margin: 10px;
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      width: 250px;
     }
-    #question-form {
+    #question-input {
+      width: 60%;
+    }
+    .dashboard, .admin-panel {
       display: none;
-      text-align: center;
-      margin-top: 30px;
+      padding: 20px;
     }
     table {
-      width: 90%;
-      margin: auto;
+      width: 100%;
       border-collapse: collapse;
+      margin-top: 20px;
     }
     table, th, td {
-      border: 1px solid #ccc;
+      border: 1px solid #aaa;
     }
     th, td {
-      padding: 8px;
+      padding: 10px;
+      text-align: center;
     }
   </style>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 </head>
 <body>
+  <header>
+    <h1>زميل التعليم - TaleemMate</h1>
+    <p>مساعد ذكي لتعليم الأطفال من الروضة حتى الصف 12</p>
+  </header>
+
   <nav>
-    <span id="user-email" style="float:left; font-weight:bold;"></span>
+    <span id="user-email"></span>
     <button onclick="showLogin()">تسجيل الدخول / إنشاء حساب</button>
-    <button id="logout-btn" onclick="logout()" style="display:none;">تسجيل الخروج</button>
-    <button id="dashboard-btn" onclick="showDashboard()" style="display:none;">لوحة التحكم</button>
+    <button onclick="logout()" id="logout-btn" style="display:none">تسجيل الخروج</button>
+    <button onclick="showDashboard()" id="dashboard-btn" style="display:none">لوحة التحكم</button>
+    <button onclick="showAdminPanel()" id="admin-btn" style="display:none">لوحة المشرف</button>
   </nav>
 
-  <div id="login-section" class="section">
+  <div class="section" id="login-section" style="display:none">
     <h3>تسجيل الدخول / إنشاء حساب</h3>
-    <input type="email" id="email" placeholder="البريد الإلكتروني" /><br />
-    <input type="password" id="password" placeholder="كلمة المرور" /><br />
+    <input type="email" id="email" placeholder="البريد الإلكتروني" />
+    <input type="password" id="password" placeholder="كلمة المرور" />
+    <br />
     <button onclick="login()">دخول</button>
     <button onclick="signup()">إنشاء حساب</button>
   </div>
 
-  <div id="dashboard" class="section" style="display:none;">
-    <h2>مرحباً بك في لوحة التحكم</h2>
-    <p>تابع أسئلتك المحفوظة وتقدمك هنا.</p>
-    <div id="question-form">
-      <h3>✍️ اسأل المعلم الذكي</h3>
-      <input type="text" id="user-question" placeholder="اكتب سؤالك هنا" style="width:60%;" />
-      <button onclick="submitQuestion()">إرسال</button>
-    </div>
-    <div id="user-questions">يتم التحميل...</div>
+  <div class="section" id="ask-section" style="display:none">
+    <h2>✍️ اسأل المعلم الذكي</h2>
+    <select id="language">
+      <option value="ar">العربية</option>
+      <option value="en">English</option>
+    </select>
+    <select id="grade">
+      <option>KG</option>
+      <option>1</option>
+      <option>2</option>
+      <option>3</option>
+      <option>... إلخ</option>
+    </select>
+    <select id="subject">
+      <option>رياضيات</option>
+      <option>علوم</option>
+      <option>لغة عربية</option>
+      <option>لغة إنجليزية</option>
+    </select>
+    <br />
+    <input type="text" id="question-input" placeholder="اكتب سؤالك هنا..." />
+    <button onclick="submitQuestion()">إرسال</button>
   </div>
 
-  <div id="admin-panel" class="section" style="display:none;">
+  <div class="dashboard" id="dashboard">
+    <h2>لوحة تحكم المستخدم</h2>
+    <div id="user-questions">لم يتم إرسال أي سؤال بعد.</div>
+  </div>
+
+  <div class="admin-panel" id="admin-panel">
     <h2>لوحة المشرف</h2>
-    <div id="admin-questions">تحميل الأسئلة...</div>
+    <table>
+      <thead>
+        <tr><th>البريد</th><th>السؤال</th><th>التاريخ</th></tr>
+      </thead>
+      <tbody id="admin-table"></tbody>
+    </table>
   </div>
 
+  <!-- Firebase CDN (not module) -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyC-VYpA0Fiul3P70QO1TGG-OTY_nDlcUvc",
       authDomain: "taleemmate.firebaseapp.com",
       projectId: "taleemmate",
-      storageBucket: "taleemmate.firebasestorage.app",
+      storageBucket: "taleemmate.appspot.com",
       messagingSenderId: "543743794805",
       appId: "1:543743794805:web:5b05edae6656775302223c",
-      measurementId: "G-SSN7H48753"
     };
-
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
-    const adminEmails = ["ahfitems@gmail.com"];
+    const adminEmails = ["taleemmate@gmail.com"];
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        document.getElementById("logout-btn").style.display = "inline";
+        document.getElementById("dashboard-btn").style.display = "inline";
+        document.getElementById("user-email").innerText = user.email;
+        document.getElementById("ask-section").style.display = "block";
+
+        if (adminEmails.includes(user.email)) {
+          document.getElementById("admin-btn").style.display = "inline";
+          loadAdminQuestions();
+        }
+        loadUserQuestions(user.uid);
+      }
+    });
 
     function showLogin() {
       document.getElementById("login-section").style.display = "block";
@@ -103,93 +161,91 @@
 
     function login() {
       const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      auth.signInWithEmailAndPassword(email, password)
-        .then(() => {
-          document.getElementById("login-section").style.display = "none";
-        })
-        .catch(e => alert(e.message));
+      const pass = document.getElementById("password").value;
+      auth.signInWithEmailAndPassword(email, pass).then(() => {
+        alert("تم تسجيل الدخول");
+        document.getElementById("login-section").style.display = "none";
+      }).catch(e => alert(e.message));
     }
 
     function signup() {
       const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(() => {
-          alert("تم إنشاء الحساب!");
-          document.getElementById("login-section").style.display = "none";
-        })
-        .catch(e => alert(e.message));
+      const pass = document.getElementById("password").value;
+      auth.createUserWithEmailAndPassword(email, pass).then(() => {
+        alert("تم إنشاء الحساب");
+        document.getElementById("login-section").style.display = "none";
+      }).catch(e => alert(e.message));
     }
 
     function logout() {
-      auth.signOut().then(() => location.reload());
+      auth.signOut();
+      location.reload();
     }
 
     function showDashboard() {
-      document.getElementById("dashboard").scrollIntoView({ behavior: "smooth" });
+      document.getElementById("dashboard").style.display = "block";
+    }
+
+    function showAdminPanel() {
+      document.getElementById("admin-panel").style.display = "block";
     }
 
     function submitQuestion() {
-      const q = document.getElementById("user-question").value.trim();
-      if (q === "") return alert("اكتب سؤالك أولاً");
       const user = auth.currentUser;
+      if (!user) return alert("سجل الدخول أولاً");
+
+      const question = document.getElementById("question-input").value;
+      const language = document.getElementById("language").value;
+      const grade = document.getElementById("grade").value;
+      const subject = document.getElementById("subject").value;
+
+      if (!question.trim()) return alert("يرجى كتابة سؤال");
+
       db.collection("questions").add({
-        email: user.email,
         uid: user.uid,
-        question: q,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        email: user.email,
+        question,
+        language,
+        grade,
+        subject,
+        timestamp: new Date()
       }).then(() => {
-        alert("تم إرسال السؤال!");
-        document.getElementById("user-question").value = "";
-        loadUserQuestions(user);
+        alert("تم إرسال السؤال بنجاح");
+        document.getElementById("question-input").value = "";
+        loadUserQuestions(user.uid);
+        if (adminEmails.includes(user.email)) loadAdminQuestions();
       });
     }
 
-    function loadUserQuestions(user) {
-      db.collection("questions")
-        .where("uid", "==", user.uid)
-        .orderBy("timestamp", "desc")
-        .get()
+    function loadUserQuestions(uid) {
+      db.collection("questions").where("uid", "==", uid).orderBy("timestamp", "desc").get()
         .then(snapshot => {
-          const list = snapshot.docs.map(doc => {
-            const d = doc.data();
-            return `<li>${d.question} <br><small>${new Date(d.timestamp?.toDate()).toLocaleString()}</small></li>`;
-          }).join("");
-          document.getElementById("user-questions").innerHTML = "<ul>" + list + "</ul>";
+          const container = document.getElementById("user-questions");
+          if (snapshot.empty) {
+            container.innerHTML = "<p>لم ترسل أي سؤال بعد.</p>";
+            return;
+          }
+          let html = "<ul>";
+          snapshot.forEach(doc => {
+            const q = doc.data();
+            html += `<li>${q.question} - (${q.subject} - ${q.grade})</li>`;
+          });
+          html += "</ul>";
+          container.innerHTML = html;
         });
     }
 
     function loadAdminQuestions() {
-      db.collection("questions")
-        .orderBy("timestamp", "desc")
-        .get()
-        .then(snapshot => {
-          const rows = snapshot.docs.map(doc => {
-            const d = doc.data();
-            return `<tr><td>${d.email}</td><td>${d.question}</td><td>${new Date(d.timestamp?.toDate()).toLocaleString()}</td></tr>`;
-          }).join("");
-          document.getElementById("admin-questions").innerHTML = `
-            <table><tr><th>البريد</th><th>السؤال</th><th>التاريخ</th></tr>${rows}</table>`;
+      db.collection("questions").orderBy("timestamp", "desc").get().then(snapshot => {
+        const tbody = document.getElementById("admin-table");
+        tbody.innerHTML = "";
+        snapshot.forEach(doc => {
+          const q = doc.data();
+          const row = `<tr><td>${q.email}</td><td>${q.question}</td><td>${new Date(q.timestamp.toDate()).toLocaleString()}</td></tr>`;
+          tbody.innerHTML += row;
         });
+      });
     }
-
-    auth.onAuthStateChanged(user => {
-      const isAdmin = user && adminEmails.includes(user.email);
-      if (user) {
-        document.getElementById("user-email").textContent = user.email;
-        document.getElementById("logout-btn").style.display = "inline";
-        document.getElementById("dashboard-btn").style.display = "inline";
-        document.getElementById("login-section").style.display = "none";
-        document.getElementById("dashboard").style.display = "block";
-        document.getElementById("question-form").style.display = "block";
-        loadUserQuestions(user);
-        if (isAdmin) {
-          document.getElementById("admin-panel").style.display = "block";
-          loadAdminQuestions();
-        }
-      }
-    });
   </script>
 </body>
 </html>
