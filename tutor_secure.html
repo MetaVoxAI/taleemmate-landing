@@ -5,148 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>زميل التعليم - TaleemMate</title>
   <style>
-    body {
-      font-family: 'Segoe UI', 'Arial', sans-serif;
-      background: linear-gradient(to left, #e3f0ff, #f7fafd 80%);
-      margin: 0;
-      padding: 0;
-      direction: rtl;
-      min-height: 100vh;
-    }
-    header {
-      background: linear-gradient(to right, #007bff, #0066cc 90%);
-      color: white;
-      padding: 24px 10px 10px 10px;
-      text-align: center;
-      border-radius: 0 0 32px 32px;
-      box-shadow: 0 4px 24px 0 rgba(0,0,0,0.08);
-    }
-    nav {
-      padding: 14px;
-      text-align: center;
-      background: #f3f8fb;
-      box-shadow: 0 2px 8px 0 rgba(0,0,0,0.05);
-      position: sticky;
-      top: 0;
-      z-index: 2;
-      border-bottom: 1px solid #e1eaf2;
-    }
-    nav button {
-      margin: 0 8px;
-      padding: 8px 18px;
-      font-weight: 500;
-      border: none;
-      border-radius: 10px;
-      background: #007bff;
-      color: white;
-      font-size: 1em;
-      cursor: pointer;
-      transition: background 0.25s, box-shadow 0.25s;
-      box-shadow: 0 1px 4px #b2c7e6a0;
-    }
-    nav button:hover {
-      background: #0057a3;
-    }
-    .container {
-      max-width: 600px;
-      margin: 32px auto 0 auto;
-      background: #fff;
-      border-radius: 22px;
-      box-shadow: 0 8px 32px 0 rgba(128, 180, 220, 0.12);
-      padding: 30px 20px;
-      position: relative;
-      z-index: 1;
-    }
-    .container h2 {
-      color: #007bff;
-      font-size: 1.45em;
-      margin-bottom: 12px;
-    }
-    select, input[type=text], input[type=email], input[type=password] {
-      margin: 10px 0;
-      padding: 13px 10px;
-      border-radius: 7px;
-      border: 1px solid #c1dbf6;
-      width: 96%;
-      font-size: 1em;
-      transition: border 0.2s;
-      background: #f8fbff;
-    }
-    select:focus, input:focus {
-      border-color: #007bff;
-      background: #eef6ff;
-    }
-    .submit-btn {
-      margin-top: 14px;
-      padding: 13px 36px;
-      border-radius: 8px;
-      border: none;
-      background: #007bff;
-      color: white;
-      font-weight: 600;
-      font-size: 1.07em;
-      cursor: pointer;
-      transition: background 0.22s;
-    }
-    .submit-btn:hover {
-      background: #0057a3;
-    }
-    .answer {
-      background: #ecf6ff;
-      color: #1d3974;
-      margin-top: 23px;
-      padding: 18px;
-      border-radius: 10px;
-      min-height: 46px;
-      font-size: 1.1em;
-      box-shadow: 0 2px 12px 0 rgba(60, 80, 130, 0.05);
-      transition: background 0.3s;
-      word-break: break-word;
-      text-align: right;
-      line-height: 1.6;
-    }
-    .dashboard, .admin-panel {
-      display: none;
-      padding: 22px;
-      background: #fff;
-      border-radius: 16px;
-      margin: 24px 0;
-      box-shadow: 0 2px 10px #e0eefd30;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background: #fcfcfe;
-    }
-    table, th, td {
-      border: 1px solid #e4eaf4;
-    }
-    th, td {
-      padding: 11px 5px;
-      text-align: center;
-      font-size: 1em;
-    }
-    #ai-answer.loading {
-      background: #e3f0ff;
-      color: #6c85b3;
-      font-style: italic;
-      animation: fadeinout 1.5s linear infinite alternate;
-    }
-    @keyframes fadeinout {
-      0% { opacity: 1; }
-      100% { opacity: 0.6; }
-    }
-    @media (max-width: 600px) {
-      .container {
-        padding: 13px 4px;
-        border-radius: 0;
-      }
-      .dashboard, .admin-panel {
-        border-radius: 0;
-        margin: 0;
-      }
-    }
+    body { font-family: 'Segoe UI', 'Arial', sans-serif; background: linear-gradient(to left, #e3f0ff, #f7fafd 80%); margin: 0; padding: 0; direction: rtl; min-height: 100vh; }
+    header { background: linear-gradient(to right, #007bff, #0066cc 90%); color: white; padding: 24px 10px 10px 10px; text-align: center; border-radius: 0 0 32px 32px; box-shadow: 0 4px 24px 0 rgba(0,0,0,0.08); }
+    nav { padding: 14px; text-align: center; background: #f3f8fb; box-shadow: 0 2px 8px 0 rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 2; border-bottom: 1px solid #e1eaf2; }
+    nav button { margin: 0 8px; padding: 8px 18px; font-weight: 500; border: none; border-radius: 10px; background: #007bff; color: white; font-size: 1em; cursor: pointer; transition: background 0.25s, box-shadow 0.25s; box-shadow: 0 1px 4px #b2c7e6a0; }
+    nav button:hover { background: #0057a3; }
+    .container { max-width: 600px; margin: 32px auto 0 auto; background: #fff; border-radius: 22px; box-shadow: 0 8px 32px 0 rgba(128, 180, 220, 0.12); padding: 30px 20px; position: relative; z-index: 1; }
+    .container h2 { color: #007bff; font-size: 1.45em; margin-bottom: 12px; }
+    select, input[type=text], input[type=email], input[type=password] { margin: 10px 0; padding: 13px 10px; border-radius: 7px; border: 1px solid #c1dbf6; width: 96%; font-size: 1em; transition: border 0.2s; background: #f8fbff; }
+    select:focus, input:focus { border-color: #007bff; background: #eef6ff; }
+    .submit-btn { margin-top: 14px; padding: 13px 36px; border-radius: 8px; border: none; background: #007bff; color: white; font-weight: 600; font-size: 1.07em; cursor: pointer; transition: background 0.22s; }
+    .submit-btn:hover { background: #0057a3; }
+    .answer { background: #ecf6ff; color: #1d3974; margin-top: 23px; padding: 18px; border-radius: 10px; min-height: 46px; font-size: 1.1em; box-shadow: 0 2px 12px 0 rgba(60, 80, 130, 0.05); transition: background 0.3s; word-break: break-word; text-align: right; line-height: 1.6; }
+    #ai-answer.loading { background: #e3f0ff; color: #6c85b3; font-style: italic; animation: fadeinout 1.5s linear infinite alternate; }
+    @keyframes fadeinout { 0% { opacity: 1; } 100% { opacity: 0.6; } }
+    @media (max-width: 600px) { .container { padding: 13px 4px; border-radius: 0; } }
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
@@ -157,16 +30,14 @@
     <h1 id="main-title">زميل التعليم - TaleemMate</h1>
     <p id="main-desc">مساعد ذكي لتعليم الأطفال من الروضة حتى الصف 12</p>
   </header>
-
   <nav>
     <button onclick="showLogin()" id="login-nav-btn">تسجيل الدخول / إنشاء حساب</button>
     <button onclick="logout()" id="logout-btn" style="display:none">تسجيل الخروج</button>
     <button onclick="showDashboard()" id="dashboard-btn" style="display:none">لوحة التحكم</button>
     <button onclick="showAdminPanel()" id="admin-btn" style="display:none">لوحة المشرف</button>
-    <button onclick="toggleLanguage()">🌐 اللغة / Language</button>
+    <button onclick="toggleLanguage()" id="lang-btn">🌐 اللغة / Language</button>
     <span id="user-email"></span>
   </nav>
-
   <div class="container" id="ask-section">
     <h2 id="ask-title">✍️ اسأل المعلم الذكي</h2>
     <select id="subject">
@@ -190,14 +61,93 @@
       <option value="11">الصف الحادي عشر</option>
       <option value="12">الصف الثاني عشر</option>
     </select>
-    <!-- Language selector is REMOVED -->
     <input type="text" id="question-input" placeholder="اكتب سؤالك هنا..." />
     <button class="submit-btn" onclick="submitQuestion()" id="submit-btn">إرسال</button>
     <div id="ai-answer" class="answer"></div>
   </div>
 
-  <!-- ... rest of dashboard, admin-panel, login-section, scripts ... -->
-  <!-- Use your previous script logic, just remove the language select from the form -->
+  <!-- Login, Dashboard, Admin-Panel etc remain unchanged -->
 
+  <script>
+    // --- Language UI & storage ---
+    const langLabels = {
+      ar: {
+        title: "زميل التعليم - TaleemMate",
+        desc: "مساعد ذكي لتعليم الأطفال من الروضة حتى الصف 12",
+        ask: "✍️ اسأل المعلم الذكي",
+        placeholder: "اكتب سؤالك هنا...",
+        submit: "إرسال",
+        login: "تسجيل الدخول / إنشاء حساب",
+        logout: "تسجيل الخروج",
+        dashboard: "لوحة التحكم",
+        admin: "لوحة المشرف",
+        subject: ["رياضيات", "علوم", "لغة عربية", "لغة إنجليزية"],
+        grade: [
+          "الروضة","الصف الأول","الصف الثاني","الصف الثالث","الصف الرابع","الصف الخامس",
+          "الصف السادس","الصف السابع","الصف الثامن","الصف التاسع","الصف العاشر","الصف الحادي عشر","الصف الثاني عشر"
+        ]
+      },
+      en: {
+        title: "TaleemMate - AI Tutor",
+        desc: "Smart assistant for students KG to Grade 12",
+        ask: "✍️ Ask the Smart Tutor",
+        placeholder: "Type your question here...",
+        submit: "Submit",
+        login: "Login / Create Account",
+        logout: "Logout",
+        dashboard: "Dashboard",
+        admin: "Admin Panel",
+        subject: ["Math", "Science", "Arabic", "English"],
+        grade: [
+          "KG","Grade 1","Grade 2","Grade 3","Grade 4","Grade 5",
+          "Grade 6","Grade 7","Grade 8","Grade 9","Grade 10","Grade 11","Grade 12"
+        ]
+      }
+    };
+    function setLangUI(lang) {
+      const L = langLabels[lang];
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+      document.getElementById("main-title").innerText = L.title;
+      document.getElementById("main-desc").innerText = L.desc;
+      document.getElementById("ask-title").innerText = L.ask;
+      document.getElementById("question-input").placeholder = L.placeholder;
+      document.getElementById("submit-btn").innerText = L.submit;
+      document.getElementById("login-nav-btn").innerText = L.login;
+      document.getElementById("logout-btn").innerText = L.logout;
+      document.getElementById("dashboard-btn").innerText = L.dashboard;
+      document.getElementById("admin-btn").innerText = L.admin;
+      // update subjects
+      const s = document.getElementById("subject").options;
+      for (let i = 0; i < s.length; ++i) s[i].text = L.subject[i];
+      // update grades
+      const g = document.getElementById("grade").options;
+      for (let i = 0; i < g.length; ++i) g[i].text = L.grade[i];
+    }
+    function toggleLanguage() {
+      const current = localStorage.getItem("lang") || "ar";
+      const next = current === "ar" ? "en" : "ar";
+      localStorage.setItem("lang", next);
+      setLangUI(next);
+    }
+    window.onload = function() {
+      setLangUI(localStorage.getItem("lang") || "ar");
+    };
+    // --- Demo Submit Question ---
+    function submitQuestion() {
+      const lang = document.documentElement.lang;
+      const question = document.getElementById('question-input').value.trim();
+      const aiAnswer = document.getElementById('ai-answer');
+      aiAnswer.innerText = '';
+      aiAnswer.classList.remove('loading');
+      if (!question) return alert(lang === "ar" ? 'يرجى كتابة سؤال.' : 'Please enter a question.');
+      aiAnswer.innerText = lang === 'ar' ? '...جاري إنشاء الإجابة' : 'Generating answer...';
+      aiAnswer.classList.add('loading');
+      setTimeout(() => {
+        aiAnswer.innerText = lang === "ar" ? `إجابة للسؤال: ${question}` : `Answer to: ${question}`;
+        aiAnswer.classList.remove('loading');
+      }, 1200);
+    }
+  </script>
 </body>
 </html>
